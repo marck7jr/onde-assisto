@@ -1,12 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>b0f908d8-f205-4d01-b79e-60f880ad76b6</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="Controllers\" />
   </ItemGroup>
-
-
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OndeAssisto.Common\OndeAssisto.Common.csproj" />
+  </ItemGroup>
 </Project>
