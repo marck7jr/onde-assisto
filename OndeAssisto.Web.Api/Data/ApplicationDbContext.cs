@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OndeAssisto.Common.Models;
 
 namespace OndeAssisto.Web.Api.Data
 {
@@ -8,5 +9,7 @@ namespace OndeAssisto.Web.Api.Data
         {
 
         }
+
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }
