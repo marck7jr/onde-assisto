@@ -53,6 +53,7 @@ namespace OndeAssisto.Web.Api.Controllers
                 return BadRequest();
             }
 
+            usuario.DataAtualizacao = DateTime.Now;
             _context.Entry(usuario).State = EntityState.Modified;
 
             try
@@ -80,6 +81,9 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
+            usuario.DataCriacao = DateTime.Now;
+            usuario.DataAtualizacao = DateTime.Now;
+
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
