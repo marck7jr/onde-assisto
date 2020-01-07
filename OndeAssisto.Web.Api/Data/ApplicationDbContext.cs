@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
+using OndeAssisto.Web.Api.Services.Jwt;
 
 namespace OndeAssisto.Web.Api.Data
 {
@@ -10,6 +11,7 @@ namespace OndeAssisto.Web.Api.Data
 
         }
 
-        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<JwtTokenRefreshData> Tokens { get; set; }
     }
 }
