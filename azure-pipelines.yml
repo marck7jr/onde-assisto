@@ -35,7 +35,6 @@ steps:
       arguments: '--configuration $(buildConfiguration)'
 
   - task: DotNetCoreCLI@2
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       command: 'publish'
       publishWebProjects: false
@@ -44,14 +43,12 @@ steps:
       zipAfterPublish: false
 
   - task: ArchiveFiles@2
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       rootFolderOrFile: '$(publishDirectory)'
       includeRootFolder: false
       archiveFile: '$(publishDirectory)/build$(Build.BuildId).zip'
 
   - task: PublishBuildArtifacts@1
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
       PathtoPublish: '$(publishDirectory)/build$(Build.BuildId).zip'
       ArtifactName: 'drop'
