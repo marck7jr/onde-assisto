@@ -29,9 +29,6 @@ namespace OndeAssisto.Web.Api.Controllers
             {
                 if (await _context.Accounts.FindAsync(guid) is Account account)
                 {
-                    _context.Accounts.Remove(account);
-                    await _context.SaveChangesAsync();
-
                     return account;
                 }
 
