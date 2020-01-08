@@ -1,0 +1,15 @@
+﻿@page "/feedback"
+@inject IStringLocalizer<Feedback> _localizer
+
+<div class="page page-feedback">
+    <aside>
+        <div>
+            <img src="img/logo.png">
+            <h3>@_localizer["CardTitle"]</h3>
+            <p>@_localizer["CardContent"]</p>
+        </div>
+        <a role="button" class="button-primary" href="mailto:help.ondeassisto@outlook.com?subject=OndeAssisto%20|%20Feedback">
+            @_localizer["FeedbackButton"]
+        </a>
+    </aside>
+</div>

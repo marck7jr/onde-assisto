@@ -1,0 +1,13 @@
+﻿@import "../global.scss";
+
+.button-primary {
+    background: $secundaryColor;
+    border: none;
+    border-radius: .5em;
+    box-shadow: -12px -12px 12px 0 rgba($baseHighColor, 1), 12px 12px 12px 0 rgba($altHighColor, .03);
+    color: $baseHighColor;
+    padding: 1em;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+}

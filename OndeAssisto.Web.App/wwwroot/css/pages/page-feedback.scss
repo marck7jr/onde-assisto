@@ -1,0 +1,41 @@
+﻿@import "../global.scss";
+
+.page-feedback {
+    background: linear-gradient(transparent, rgba($primaryColor, .4)), url("/img/preview-background.jpg");
+    background-size: cover;
+    grid-template-areas: "nav main" "nav foot";
+
+
+    aside {
+        background: $chromeMediumLow;
+        display: flex;
+        flex-direction: column;
+        grid-area: nav;
+        justify-content: space-between;
+        max-width: 20%;
+        padding: 1.5em;
+
+        div {
+            img {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 20vh;
+            }
+
+            h3 {
+                padding: 2em 0 0 0;
+            }
+
+            p {
+                margin: 0;
+                text-align: justify;
+            }
+        }
+
+        button {
+            align-self: flex-end;
+            width: 100%;
+        }
+    }
+}
