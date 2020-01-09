@@ -7,6 +7,12 @@ trigger:
 - master
 - dev/*
 
+pr:
+  branches:
+    include:
+      - master
+      - dev/*
+
 pool:
   vmImage: 'windows-latest'
 
