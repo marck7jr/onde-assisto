@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace OndeAssisto.Web.App
 {
@@ -19,9 +23,19 @@ namespace OndeAssisto.Web.App
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddLocalization(options => 
+            services.AddLocalization(options =>
             {
                 options.ResourcesPath = "Resources";
+            });
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedUICultures = new List<CultureInfo>
+                {
+                    new CultureInfo("pt-BR", false),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture(supportedUICultures.FirstOrDefault());
+                options.SupportedUICultures = supportedUICultures;
             });
             services.AddRazorPages();
             services.AddServerSideBlazor();
@@ -42,6 +56,7 @@ namespace OndeAssisto.Web.App
                 app.UseHsts();
             }
 
+            app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

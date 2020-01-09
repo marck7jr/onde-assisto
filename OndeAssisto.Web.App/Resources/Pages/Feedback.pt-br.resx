@@ -117,13 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CardContent" xml:space="preserve">
-    <value>Agradecemos muito pelo seu interesse em nossos serviços, entranto eles atualmente ainda se encontram em desenvolvimento, mas você é livre para experimentar e nos enviar feedbacks com sugestões, críticas e incluse elogios. Agradecemos desde já a sua contribuição.</value>
-  </data>
-  <data name="CardTitle" xml:space="preserve">
-    <value>Obrigado!</value>
-  </data>
   <data name="FeedbackButton" xml:space="preserve">
     <value>Enviar Feedback</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Agradecemos muito pelo seu interesse em nossos serviços, entranto eles atualmente ainda se encontram em desenvolvimento, mas você é livre para experimentar e nos enviar feedbacks com sugestões, críticas e incluse elogios. Agradecemos desde já a sua contribuição.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Obrigado!</value>
   </data>
 </root>
