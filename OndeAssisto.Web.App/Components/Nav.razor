@@ -1,0 +1,8 @@
+﻿<nav class="nav-container">
+    @ChildContent
+</nav>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

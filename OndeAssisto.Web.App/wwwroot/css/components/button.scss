@@ -1,13 +1,64 @@
-﻿@import "../global.scss";
+﻿@import "../variables.scss";
 
-.button-primary {
-    background: $secundaryColor;
+a, button {
+    align-items: center;
     border: none;
     border-radius: .5em;
-    box-shadow: -12px -12px 12px 0 rgba($baseHighColor, 1), 12px 12px 12px 0 rgba($altHighColor, .03);
-    color: $baseHighColor;
-    padding: 1em;
-    text-align: center;
+    color: rgba($baseColor, .8);
+    display: flex;
+    flex-flow: row;
+    outline: none;
+    transition: box-shadow .3s, color .3s, background .3s;
     text-decoration: none;
-    text-transform: uppercase;
+
+    p {
+        flex: 1;
+        font-size: medium;
+        margin: .8em;
+        text-align: center;
+    }
+
+    &.icon {
+        & > svg {
+            width: 2em;
+            margin: 0 .8em;
+        }
+    }
+
+    &.flat {
+        background: none;
+    }
+
+    &.primary, &.secondary {
+        color: $altColor;
+
+        &:hover {
+            box-shadow: -.5em -.5em 1em rgba($altColor, 1), .5em .5em 1em rgba($baseColor, .2);
+
+            p {
+                color: $altColor;
+            }
+        }
+    }
+
+    &.primary {
+        background: $primaryColor;
+
+        &:hover {
+            background: rgba($primaryColor, .8);
+        }
+    }
+
+    &.secondary {
+        background: $secondaryColor;
+
+        &:hover {
+            background: rgba($secondaryColor, .8);
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 0 1em rgba($baseColor, .2);
+        cursor: pointer;
+    }
 }

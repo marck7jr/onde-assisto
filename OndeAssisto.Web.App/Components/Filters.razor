@@ -1,0 +1,26 @@
+﻿@inherits ObservableComponent
+@inject IWebHostEnvironment _env
+
+
+<aside class="filters-container">
+    <header>
+        <h3>@Title</h3>
+        @IconBackSvg
+    </header>
+    <form>
+        @ChildContent
+    </form>
+</aside>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    public MarkupString IconBackSvg { get; set; }
+    [Parameter]
+    public string Title { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IconBackSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-back.svg");
+    }
+}

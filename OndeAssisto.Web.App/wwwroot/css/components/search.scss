@@ -1,0 +1,20 @@
+﻿@import "../variables.scss";
+
+.search-container {
+    position: relative;
+
+    & > input {
+        border: solid 1pt rgba($baseColor, .2);
+        border-radius: .5em;
+        min-width: 40vw;
+        outline: none;
+        padding: .5em;
+    }
+
+    & > svg {
+        padding: .3em;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}

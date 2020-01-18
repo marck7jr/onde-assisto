@@ -14,20 +14,14 @@
     <EmbeddedResource Remove="Data\**" />
     <None Remove="Data\**" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
-    <Content Remove="wwwroot\css\components\button.scss" />
     <Content Remove="wwwroot\css\pages\page-feedback.scss" />
   </ItemGroup>
 
   <ItemGroup>
-    <Watch Remove="wwwroot\css\components\button.scss" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="compilerconfig.json" />
-    <None Include="wwwroot\css\components\button.scss" />
     <None Include="wwwroot\css\pages\page-feedback.scss" />
   </ItemGroup>
 
@@ -45,9 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="**\*.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <CopyToOutputDirectory></CopyToOutputDirectory>
+    <EmbeddedResource Update="Resources\Pages\Feedback.pt-br.resx">
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
 

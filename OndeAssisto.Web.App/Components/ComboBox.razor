@@ -1,0 +1,15 @@
+﻿@inherits ObservableComponent
+
+<div class="combo-box-container">
+    <label>@Label</label>
+    <select>
+        <option value="" disabled selected>@Placeholder</option>
+    </select>
+</div>
+
+@code {
+    [Parameter]
+    public string Label { get; set; }
+    [Parameter]
+    public string Placeholder { get; set; }
+}

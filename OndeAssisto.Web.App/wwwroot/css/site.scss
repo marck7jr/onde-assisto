@@ -2,23 +2,24 @@
 
 // Components
 @import "components/button.scss";
+@import "components/combo-box.scss";
+@import "components/filters.scss";
+@import "components/modal.scss";
+@import "components/nav.scss";
+@import "components/search.scss";
+
+// Layouts
+@import "layouts/main-layout.scss";
 
 // Pages
 @import "pages/page-feedback.scss";
+@import "pages/page-home.scss";
 
 * {
     font-family: 'Roboto', sans-serif;
-}
-
-html, body {
     margin: 0;
+    padding: 0;
 }
-
-.page {
-    display: grid;
-    min-height: 100vh;
-}
-
 
 #blazor-error-ui {
     background: lightyellow;

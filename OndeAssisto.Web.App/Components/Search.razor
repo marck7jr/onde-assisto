@@ -1,0 +1,19 @@
+﻿@inject IWebHostEnvironment _env
+
+<div class="search-container">
+    <input @bind="QueryParams" placeholder="Filme ou Série..." />
+    @IconFindSvg
+</div>
+
+@code {
+    [Parameter]
+    public MarkupString IconFindSvg { get; set; }
+
+    [Parameter]
+    public string QueryParams { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IconFindSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-find.svg");
+    }
+}

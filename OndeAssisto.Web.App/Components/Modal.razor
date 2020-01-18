@@ -1,0 +1,35 @@
+﻿@inherits ObservableComponent
+@inject IWebHostEnvironment _env
+
+<div class="modal-container @CurrentState">
+    <div class="modal-dialog">
+        <button id="modal-close-button" class="flat" @onclick="Close">@IconCloseSvg</button>
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    public const string OpenState = "active";
+    public const string ClosedState = "hidden";
+
+    private string currentState;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public MarkupString IconCloseSvg { get; set; }
+
+    [CascadingParameter]
+    public string CurrentState { get => currentState; set => Set(ref currentState, value); }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentState = ClosedState;
+        IconCloseSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-close.svg");
+    }
+
+    public void Close()
+    {
+        CurrentState = ClosedState;
+    }
+}

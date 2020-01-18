@@ -1,0 +1,10 @@
+﻿@import "../variables.scss";
+
+.page-home {
+    display: flex;
+    flex-flow: row;
+
+    & > .filters-container {
+        margin-left: 6em;
+    }
+}

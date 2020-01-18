@@ -1,0 +1,17 @@
+﻿@page "/home"
+@inject IStringLocalizer<Home> _localizer
+
+<div class="page-home">
+    <Filters Title="@_localizer["FiltersTitle"]">
+        <ComboBox Label="@_localizer["FiltersPlatformsLabel"]" Placeholder="@_localizer["FiltersPlatformsPlaceholder"]" />
+        <ComboBox Label="@_localizer["FiltersTypeLabel"]" Placeholder="@_localizer["FiltersTypePlaceholder"]" />
+        <ComboBox Label="@_localizer["FiltersGenreLabel"]" Placeholder="@_localizer["FiltersGenrePlaceholder"]" />
+        <ComboBox Label="@_localizer["FiltersClassificationLabel"]" Placeholder="@_localizer["FiltersClassificationPlaceholder"]" />
+        <ComboBox Label="@_localizer["FiltersReviewLabel"]" Placeholder="@_localizer["FiltersReviewPlaceholder"]" />
+        <ComboBox Label="@_localizer["FiltersYearLabel"]" Placeholder="@_localizer["FiltersYearPlaceholder"]" />
+    </Filters>
+</div>
+
+@code {
+
+}

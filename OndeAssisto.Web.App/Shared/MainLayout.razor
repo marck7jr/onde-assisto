@@ -1,5 +1,77 @@
 ﻿@inherits LayoutComponentBase
+@inject IWebHostEnvironment _env
+@inject IStringLocalizer<MainLayout> _localizer
+@inject NavigationManager _navManager
 
 <main>
+    <header>
+        <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+        @{
+            if (IsProfile)
+            {
+                <Nav>
+                    <NavLink href="/works">
+                        <p>@_localizer["NavWorksLinkText"]</p>
+                    </NavLink>
+                    <NavLink href="/works">
+                        <p>@_localizer["NavContributionsLinkText"]</p>
+                    </NavLink>
+                </Nav>
+            }
+            else
+            {
+                <Search />
+            }
+        }
+        <button class="flat icon" @onclick="ShowAuthModal">
+            <p>@_localizer["LoginButtonText"]</p>
+            @IconUserSvg
+        </button>
+    </header>
     @Body
+    <Modal @ref="AuthModal">
+        <form id="auth-form">
+            <label>@_localizer["AuthModalLoginLabel"]</label>
+            <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
+            <label>@_localizer["AuthModalPasswordLabel"]</label>
+            <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
+            <button class="secondary">
+                <p>
+                    @_localizer["SignIn"]
+                </p>
+            </button>
+            <p>@_localizer["SignUpMessage"]<NavLink class="flat">@_localizer["SignUp"]</NavLink></p>
+        </form>
+    </Modal>
 </main>
+
+@code {
+    [Parameter]
+    public MarkupString IconUserSvg { get; set; }
+
+    public Modal AuthModal { get; set; }
+    public IJwtCredentialsIdentity Credentials { get; set; }
+    public bool IsProfile { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_navManager.ToBaseRelativePath(_navManager.Uri) == "profile")
+        {
+            IsProfile = true;
+        }
+
+        Credentials = new Account();
+        IconUserSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-user.svg");
+    }
+
+    public void GoToHome()
+    {
+        _navManager.NavigateTo("/home", true);
+    }
+
+    public void ShowAuthModal()
+    {
+        AuthModal.CurrentState = Modal.OpenState;
+    }
+
+}

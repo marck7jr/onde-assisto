@@ -1,0 +1,63 @@
+﻿@import "../variables.scss";
+
+main {
+    display: flex;
+    flex-flow: column;
+    min-height: 100vh;
+
+    header {
+        align-items: center;
+        box-sizing: border-box;
+        box-shadow: 0 0 1em rgba($baseColor, .2);
+        display: flex;
+        flex-flow: row;
+        justify-content: space-around;
+        position: sticky;
+
+        & > img {
+            width: 10em;
+        }
+    }
+
+    #auth-form {
+        min-width: 20vw;
+        display: flex;
+        flex-flow: column;
+        padding: 1em 2em;
+
+        label {
+            margin: .5em .8em;
+            font-weight: bold;
+        }
+
+        input {
+            border: solid rgba($baseColor, .4) 1pt;
+            border-radius: .5em;
+            margin-bottom: .5em;
+            outline: none;
+            padding: 1em;
+        }
+
+        button {
+            border-radius: 2em;
+            margin: 1em auto;
+            width: 50%;
+        }
+
+        p {
+            text-transform: uppercase;
+        }
+
+        & > p {
+            align-self: center;
+            color: #2B2B2B;
+            display: flex;
+            margin: 2em 0 1em 0;
+
+            a {
+                font-weight: bold;
+                padding: 0 .5em;
+            }
+        }
+    }
+}

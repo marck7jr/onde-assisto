@@ -1,0 +1,13 @@
+﻿.nav-container {
+    display: flex;
+    flex-flow: row;
+
+    a {
+        margin: 0 1em;
+
+        p {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    }
+}
