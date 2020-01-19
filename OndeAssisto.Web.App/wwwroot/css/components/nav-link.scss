@@ -1,0 +1,8 @@
+﻿@import "../variables.scss";
+
+a {
+    color: rgba($baseColor, .8);
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+}

@@ -1,0 +1,28 @@
+﻿@inherits LayoutComponentBase
+@implements INotifyPropertyChanged
+
+<main>
+    @Body
+</main>
+
+@code {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public virtual bool Set<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value))
+        {
+            return false;
+        }
+
+        field = value;
+        OnNotifyPropertyChanged(propertyName);
+        return true;
+    }
+
+    private void OnNotifyPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        StateHasChanged();
+    }
+}

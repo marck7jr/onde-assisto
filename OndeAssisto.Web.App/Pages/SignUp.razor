@@ -1,0 +1,75 @@
+﻿@page "/profile/signup"
+@layout ObservableLayout
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager _navManager
+@inject IStringLocalizer<SignUp> _localizer
+
+<div class="page-sign-up">
+    <form method="post" @onsubmit="OnSubmitAsync">
+        <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+        <h3>@_localizer["FormTitle"]</h3>
+        <div>
+            <label>@_localizer["NameLabel"]</label>
+            <input placeholder="@_localizer["NamePlaceholder"]" type="text" @bind="Account.Name" />
+        </div>
+        <div>
+            <label>@_localizer["EmailLabel"]</label>
+            <input type="email" placeholder="@_localizer["EmailPlaceholder"]" @bind="Account.Email" />
+        </div>
+        <div>
+            <label>@_localizer["PasswordLabel"]</label>
+            <input type="password" placeholder="@_localizer["PasswordPlaceholder"]" @bind="Account.Password" />
+        </div>
+        <div id="terms">
+            <input type="checkbox" @bind="IsDisable" />
+            <label>
+                @_localizer["TermsMessage"]
+                <NavLink>@_localizer["TermsUsage"]</NavLink>
+                @_localizer["And"]
+                <NavLink>@_localizer["TermsPrivacy"]</NavLink>.
+            </label>
+        </div>
+        <button class="button-primary" type="submit" disabled="@(!IsDisable)">
+            <p>@_localizer["ButtonText"]</p>
+        </button>
+    </form>
+    <Notification @ref="Notification" />
+</div>
+
+@code {
+    public bool IsDisable { get; set; } = false;
+    public Account Account { get; set; }
+    public Notification Notification { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Account = new Account();
+    }
+
+    public async Task OnSubmitAsync()
+    {
+        this.Account.Role = AccountRoleType.User.ToString();
+        var client = _clientFactory.CreateClient("api");
+        var content = new StringContent(JsonSerializer.Serialize<Account>(this.Account), Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync("account", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // TODO: Redicionar para a página do Usuário usando as credenciais da autenticação.
+            _navManager.NavigateTo("/");
+        }
+        else
+        {
+            var code = (int)response.StatusCode;
+
+            Notification.Message = _localizer[code.ToString()];
+            Notification.IsActive = true;
+        }
+    }
+
+    public void GoToHome()
+    {
+        _navManager.NavigateTo("/home", true);
+    }
+}

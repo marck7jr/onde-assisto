@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IHttpClientFactory _clientFactory
 @inject IWebHostEnvironment _env
 @inject IStringLocalizer<MainLayout> _localizer
 @inject NavigationManager _navManager
@@ -23,24 +24,24 @@
                 <Search />
             }
         }
-        <button class="flat icon" @onclick="ShowAuthModal">
+        <button class="button-flat button-icon" @onclick="ShowAuthModal">
             <p>@_localizer["LoginButtonText"]</p>
             @IconUserSvg
         </button>
     </header>
     @Body
     <Modal @ref="AuthModal">
-        <form id="auth-form">
+        <form id="auth-form" method="post" @onsubmit="OnSubmitAsync">
             <label>@_localizer["AuthModalLoginLabel"]</label>
             <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
             <label>@_localizer["AuthModalPasswordLabel"]</label>
             <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
-            <button class="secondary">
+            <button class="button-secondary">
                 <p>
                     @_localizer["SignIn"]
                 </p>
             </button>
-            <p>@_localizer["SignUpMessage"]<NavLink class="flat">@_localizer["SignUp"]</NavLink></p>
+            <p>@_localizer["SignUpMessage"]<NavLink href="profile/signup">@_localizer["SignUp"]</NavLink></p>
         </form>
     </Modal>
 </main>
@@ -62,6 +63,26 @@
 
         Credentials = new Account();
         IconUserSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-user.svg");
+    }
+
+    public async Task OnSubmitAsync()
+    {
+        var client = _clientFactory.CreateClient("api");
+        var content = new StringContent(JsonSerializer.Serialize<IJwtCredentialsIdentity>(this.Credentials), Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync("auth/credentials", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // TODO: Fazer tratamento do Login com sucesso
+        }
+        else
+        {
+            var code = (int)response.StatusCode;
+
+            AuthModal.Notification.Message = _localizer[code.ToString()];
+            AuthModal.Notification.IsActive = true;
+        }
     }
 
     public void GoToHome()

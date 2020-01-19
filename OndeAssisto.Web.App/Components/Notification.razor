@@ -1,0 +1,33 @@
+﻿@inherits ObservableComponent
+@inject IWebHostEnvironment _env
+
+<div class="notification-container" active="@IsActive">
+    <div class="notification-body">
+        <p>@Message</p>
+        <button @onclick="OnHidden">
+            @IconCloseSvg
+        </button>
+    </div>
+</div>
+
+@code {
+    private string message;
+    private bool isActive;
+
+    [CascadingParameter]
+    public string Message { get => message; set => Set(ref message, value); }
+    [CascadingParameter]
+    public bool IsActive { get => isActive; set => Set(ref isActive, value); }
+    public MarkupString IconCloseSvg { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IconCloseSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-close.svg");
+    }
+
+    public void OnHidden()
+    {
+        IsActive = false;
+        StateHasChanged();
+    }
+}

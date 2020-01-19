@@ -1,0 +1,37 @@
+﻿@import "../variables.scss";
+
+.notification-container {
+    background: rgba($alertColor, 1);
+    border: none;
+    border-radius: .5em;
+    bottom: 1em;
+    box-shadow: 0 0 1em rgba($baseColor, .4);
+    display: none;
+    flex-flow: row;
+    margin: 0 auto;
+    min-width: 28vw;
+    padding: .5em;
+    position: absolute;
+
+    &[active] {
+        display: flex;
+    }
+
+    .notification-body {
+        width: 100%;
+        position: relative;
+
+        svg {
+            position: absolute;
+            right: 0;
+            fill: rgba($altColor, 1);
+            top: -1pt;
+            width: 1em;
+        }
+    }
+
+    p {
+        color: rgba($altColor, 1);
+        padding-right: 1.5em;
+    }
+}

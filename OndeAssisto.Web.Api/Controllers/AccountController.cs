@@ -49,7 +49,7 @@ namespace OndeAssisto.Web.Api.Controllers
             if (await _context.Accounts.AnyAsync(a => a.Email == model.Email))
             {
                 ModelState.AddModelError("Errors", "Email is already in use.");
-                return BadRequest(ModelState);
+                return Conflict(ModelState);
             }
 
             model.GetDerivationKeyHash(nameof(model.Password), nameof(model.Email));

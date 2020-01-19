@@ -44,19 +44,16 @@ main {
             width: 50%;
         }
 
-        p {
-            text-transform: uppercase;
-        }
-
         & > p {
             align-self: center;
             color: #2B2B2B;
             display: flex;
             margin: 2em 0 1em 0;
+            text-transform: uppercase;
 
             a {
                 font-weight: bold;
-                padding: 0 .5em;
+                margin-left: .5em;
             }
         }
     }

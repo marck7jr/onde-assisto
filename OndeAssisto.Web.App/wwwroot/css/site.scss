@@ -6,6 +6,8 @@
 @import "components/filters.scss";
 @import "components/modal.scss";
 @import "components/nav.scss";
+@import "components/nav-link.scss";
+@import "components/notification.scss";
 @import "components/search.scss";
 
 // Layouts
@@ -14,6 +16,7 @@
 // Pages
 @import "pages/page-feedback.scss";
 @import "pages/page-home.scss";
+@import "pages/page-sign-up.scss";
 
 * {
     font-family: 'Roboto', sans-serif;

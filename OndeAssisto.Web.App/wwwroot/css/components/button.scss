@@ -1,6 +1,6 @@
 ﻿@import "../variables.scss";
 
-a, button {
+button {
     align-items: center;
     border: none;
     border-radius: .5em;
@@ -9,39 +9,47 @@ a, button {
     flex-flow: row;
     outline: none;
     transition: box-shadow .3s, color .3s, background .3s;
-    text-decoration: none;
 
-    p {
+    p, a {
         flex: 1;
         font-size: medium;
+        letter-spacing: .02em;
         margin: .8em;
         text-align: center;
     }
 
-    &.icon {
+    &.button-icon {
         & > svg {
             width: 2em;
             margin: 0 .8em;
         }
     }
 
-    &.flat {
+    &.button-flat {
         background: none;
     }
 
-    &.primary, &.secondary {
-        color: $altColor;
+    &.button-primary, &.button-secondary {
+        a, p {
+            color: $altColor;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        &:disabled {
+            background: rgba($baseColor, .4);
+
+            &:hover {
+                background: rgba($baseColor, .4);
+            }
+        }
 
         &:hover {
             box-shadow: -.5em -.5em 1em rgba($altColor, 1), .5em .5em 1em rgba($baseColor, .2);
-
-            p {
-                color: $altColor;
-            }
         }
     }
 
-    &.primary {
+    &.button-primary {
         background: $primaryColor;
 
         &:hover {
@@ -49,7 +57,7 @@ a, button {
         }
     }
 
-    &.secondary {
+    &.button-secondary {
         background: $secondaryColor;
 
         &:hover {

@@ -3,9 +3,10 @@
 
 <div class="modal-container @CurrentState">
     <div class="modal-dialog">
-        <button id="modal-close-button" class="flat" @onclick="Close">@IconCloseSvg</button>
+        <button id="modal-close-button" class="button-flat" @onclick="Close">@IconCloseSvg</button>
         @ChildContent
     </div>
+    <Notification @ref="Notification" />
 </div>
 
 @code {
@@ -16,11 +17,14 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+    [CascadingParameter]
+    public Notification Notification { get; set; }
 
     public MarkupString IconCloseSvg { get; set; }
 
     [CascadingParameter]
     public string CurrentState { get => currentState; set => Set(ref currentState, value); }
+
 
     protected override async Task OnInitializedAsync()
     {

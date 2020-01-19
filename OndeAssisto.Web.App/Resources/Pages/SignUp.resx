@@ -117,37 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="404" xml:space="preserve">
-    <value>Nenhum usuário foi encontrado com as credenciais inseridas.</value>
+  <data name="400" xml:space="preserve">
+    <value>Dados inválidos.</value>
   </data>
-  <data name="AuthModalLoginLabel" xml:space="preserve">
-    <value>Login</value>
+  <data name="409" xml:space="preserve">
+    <value>Emal já está em uso.</value>
   </data>
-  <data name="AuthModalLoginPlaceholder" xml:space="preserve">
-    <value>E-mail</value>
+  <data name="And" xml:space="preserve">
+    <value> e </value>
   </data>
-  <data name="AuthModalPasswordLabel" xml:space="preserve">
+  <data name="ButtonText" xml:space="preserve">
+    <value>Cadastrar</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="EmailPlaceholder" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="FormTitle" xml:space="preserve">
+    <value>Criar conta</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="NamePlaceholder" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
     <value>Senha</value>
   </data>
-  <data name="AuthModalPasswordPlaceholder" xml:space="preserve">
+  <data name="PasswordPlaceholder" xml:space="preserve">
     <value>Senha</value>
   </data>
-  <data name="LoginButtonText" xml:space="preserve">
-    <value>Acessar</value>
+  <data name="TermsMessage" xml:space="preserve">
+    <value>Eu li e concordo com os </value>
   </data>
-  <data name="NavContributionsLinkText" xml:space="preserve">
-    <value>Contribuições</value>
+  <data name="TermsPrivacy" xml:space="preserve">
+    <value>Termos de Privacidade</value>
   </data>
-  <data name="NavWorksLinkText" xml:space="preserve">
-    <value>Obras</value>
-  </data>
-  <data name="SignIn" xml:space="preserve">
-    <value>Entrar</value>
-  </data>
-  <data name="SignUp" xml:space="preserve">
-    <value>Crie uma</value>
-  </data>
-  <data name="SignUpMessage" xml:space="preserve">
-    <value>Não possui conta?</value>
+  <data name="TermsUsage" xml:space="preserve">
+    <value>Termos de Uso</value>
   </data>
 </root>

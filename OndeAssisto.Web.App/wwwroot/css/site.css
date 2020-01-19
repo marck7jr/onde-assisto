@@ -1,5 +1,5 @@
 ﻿@import url("https://fonts.googleapis.com/css?family=Roboto&display=swap");
-a, button {
+button {
   align-items: center;
   border: none;
   border-radius: .5em;
@@ -7,33 +7,37 @@ a, button {
   display: flex;
   flex-flow: row;
   outline: none;
-  transition: box-shadow .3s, color .3s, background .3s;
-  text-decoration: none; }
-  a p, button p {
+  transition: box-shadow .3s, color .3s, background .3s; }
+  button p, button a {
     flex: 1;
     font-size: medium;
+    letter-spacing: .02em;
     margin: .8em;
     text-align: center; }
-  a.icon > svg, button.icon > svg {
+  button.button-icon > svg {
     width: 2em;
     margin: 0 .8em; }
-  a.flat, button.flat {
+  button.button-flat {
     background: none; }
-  a.primary, a.secondary, button.primary, button.secondary {
-    color: #FFFFFF; }
-    a.primary:hover, a.secondary:hover, button.primary:hover, button.secondary:hover {
-      box-shadow: -0.5em -0.5em 1em white, 0.5em 0.5em 1em rgba(0, 0, 0, 0.2); }
-      a.primary:hover p, a.secondary:hover p, button.primary:hover p, button.secondary:hover p {
-        color: #FFFFFF; }
-  a.primary, button.primary {
+  button.button-primary a, button.button-primary p, button.button-secondary a, button.button-secondary p {
+    color: #FFFFFF;
+    letter-spacing: .08em;
+    text-transform: uppercase; }
+  button.button-primary:disabled, button.button-secondary:disabled {
+    background: rgba(0, 0, 0, 0.4); }
+    button.button-primary:disabled:hover, button.button-secondary:disabled:hover {
+      background: rgba(0, 0, 0, 0.4); }
+  button.button-primary:hover, button.button-secondary:hover {
+    box-shadow: -0.5em -0.5em 1em white, 0.5em 0.5em 1em rgba(0, 0, 0, 0.2); }
+  button.button-primary {
     background: #2585f6; }
-    a.primary:hover, button.primary:hover {
+    button.button-primary:hover {
       background: rgba(37, 133, 246, 0.8); }
-  a.secondary, button.secondary {
+  button.button-secondary {
     background: #f69601; }
-    a.secondary:hover, button.secondary:hover {
+    button.button-secondary:hover {
       background: rgba(246, 150, 1, 0.8); }
-  a:hover, button:hover {
+  button:hover {
     box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
     cursor: pointer; }
 
@@ -108,12 +112,16 @@ a, button {
     min-height: 40vh;
     position: relative; }
     .modal-container .modal-dialog #modal-close-button {
+      padding: 1em;
       position: absolute;
-      right: -3em;
-      top: .5em; }
+      right: -4em; }
       .modal-container .modal-dialog #modal-close-button svg {
         width: 2em;
         fill: rgba(255, 255, 255, 0.4); }
+      .modal-container .modal-dialog #modal-close-button:hover {
+        background: #E02828; }
+        .modal-container .modal-dialog #modal-close-button:hover svg {
+          fill: #FFFFFF; }
 
 .nav-container {
   display: flex;
@@ -123,6 +131,39 @@ a, button {
     .nav-container a p {
       font-weight: bold;
       text-transform: uppercase; }
+
+a {
+  color: rgba(0, 0, 0, 0.8);
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer; }
+
+.notification-container {
+  background: #e02828;
+  border: none;
+  border-radius: .5em;
+  bottom: 1em;
+  box-shadow: 0 0 1em rgba(0, 0, 0, 0.4);
+  display: none;
+  flex-flow: row;
+  margin: 0 auto;
+  min-width: 28vw;
+  padding: .5em;
+  position: absolute; }
+  .notification-container[active] {
+    display: flex; }
+  .notification-container .notification-body {
+    width: 100%;
+    position: relative; }
+    .notification-container .notification-body svg {
+      position: absolute;
+      right: 0;
+      fill: white;
+      top: -1pt;
+      width: 1em; }
+  .notification-container p {
+    color: white;
+    padding-right: 1.5em; }
 
 .search-container {
   position: relative; }
@@ -170,16 +211,15 @@ main {
       border-radius: 2em;
       margin: 1em auto;
       width: 50%; }
-    main #auth-form p {
-      text-transform: uppercase; }
     main #auth-form > p {
       align-self: center;
       color: #2B2B2B;
       display: flex;
-      margin: 2em 0 1em 0; }
+      margin: 2em 0 1em 0;
+      text-transform: uppercase; }
       main #auth-form > p a {
         font-weight: bold;
-        padding: 0 .5em; }
+        margin-left: .5em; }
 
 .page-feedback {
   background: linear-gradient(transparent, rgba(37, 133, 246, 0.4)), url("/img/preview-background.jpg");
@@ -208,6 +248,53 @@ main {
   flex-flow: row; }
   .page-home > .filters-container {
     margin-left: 6em; }
+
+.page-sign-up {
+  align-items: center;
+  background: linear-gradient(transparent, rgba(37, 133, 246, 0.4)), url("/img/preview-background.jpg");
+  background-size: cover;
+  display: flex;
+  flex: 1;
+  justify-content: space-around; }
+  .page-sign-up > form {
+    background: white;
+    border: none;
+    border-radius: .5em;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-flow: column;
+    min-width: 20vw;
+    padding: 2em 4em; }
+    .page-sign-up > form img {
+      width: 5em;
+      cursor: pointer; }
+    .page-sign-up > form h3 {
+      color: #f69601;
+      margin-bottom: 1em; }
+    .page-sign-up > form #terms {
+      align-items: flex-end;
+      display: flex;
+      flex-flow: row;
+      font-size: .8em;
+      margin-bottom: 2pt;
+      margin-top: 2em; }
+      .page-sign-up > form #terms label {
+        padding-left: .4em; }
+      .page-sign-up > form #terms a {
+        display: inline-block; }
+    .page-sign-up > form div {
+      display: flex;
+      flex-flow: column; }
+      .page-sign-up > form div label {
+        color: rgba(0, 0, 0, 0.6);
+        margin: .5em 0;
+        font-weight: bold; }
+      .page-sign-up > form div input {
+        border: solid rgba(0, 0, 0, 0.4) 1pt;
+        border-radius: .5em;
+        margin-bottom: .5em;
+        outline: none;
+        padding: .5em; }
 
 * {
   font-family: 'Roboto', sans-serif;
