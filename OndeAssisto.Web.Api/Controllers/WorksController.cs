@@ -11,48 +11,48 @@ namespace OndeAssisto.Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PlatformsController : ControllerBase
+    public class WorksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public PlatformsController(ApplicationDbContext context)
+        public WorksController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Platforms
+        // GET: api/Works
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Platform>>> GetPlatforms()
+        public async Task<ActionResult<IEnumerable<Work>>> GetWorks()
         {
-            return await _context.Platforms.ToListAsync();
+            return await _context.Works.ToListAsync();
         }
 
-        // GET: api/Platforms/5
+        // GET: api/Works/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Platform>> GetPlatform(Guid id)
+        public async Task<ActionResult<Work>> GetWork(Guid id)
         {
-            var platform = await _context.Platforms.FindAsync(id);
+            var work = await _context.Works.FindAsync(id);
 
-            if (platform == null)
+            if (work == null)
             {
                 return NotFound();
             }
 
-            return platform;
+            return work;
         }
 
-        // PUT: api/Platforms/5
+        // PUT: api/Works/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlatform(Guid id, Platform platform)
+        public async Task<IActionResult> PutWork(Guid id, Work work)
         {
-            if (id != platform.Guid)
+            if (id != work.Guid)
             {
                 return BadRequest();
             }
 
-            _context.Entry(platform).State = EntityState.Modified;
+            _context.Entry(work).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace OndeAssisto.Web.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PlatformExists(id))
+                if (!WorkExists(id))
                 {
                     return NotFound();
                 }
@@ -73,37 +73,37 @@ namespace OndeAssisto.Web.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Platforms
+        // POST: api/Works
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Platform>> PostPlatform(Platform platform)
+        public async Task<ActionResult<Work>> PostWork(Work work)
         {
-            _context.Platforms.Add(platform);
+            _context.Works.Add(work);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPlatform", new { id = platform.Guid }, platform);
+            return CreatedAtAction("GetWork", new { id = work.Guid }, work);
         }
 
-        // DELETE: api/Platforms/5
+        // DELETE: api/Works/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Platform>> DeletePlatform(Guid id)
+        public async Task<ActionResult<Work>> DeleteWork(Guid id)
         {
-            var platform = await _context.Platforms.FindAsync(id);
-            if (platform == null)
+            var work = await _context.Works.FindAsync(id);
+            if (work == null)
             {
                 return NotFound();
             }
 
-            _context.Platforms.Remove(platform);
+            _context.Works.Remove(work);
             await _context.SaveChangesAsync();
 
-            return platform;
+            return work;
         }
 
-        private bool PlatformExists(Guid id)
+        private bool WorkExists(Guid id)
         {
-            return _context.Platforms.Any(e => e.Guid == id);
+            return _context.Works.Any(e => e.Guid == id);
         }
     }
 }

@@ -11,9 +11,13 @@ namespace OndeAssisto.Web.Api.Data
 
         }
 
-        public DbSet<Platform> Platforms { get; set; }
-        
+
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Media> Medias { get; set; }
+        public DbSet<Platform> Platforms { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Work> Works { get; set; }
         public DbSet<JwtTokenRefreshData> Tokens { get; set; }
     }
 }

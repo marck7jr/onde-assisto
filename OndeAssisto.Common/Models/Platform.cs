@@ -1,37 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OndeAssisto.Common.Models
 {
-   public class Platform : Entity
+    public class Platform : Entity
     {
-        string nome;
-        string logo;
-        string site;
+        private string name;
+        private string logo;
+        private string site;
 
         //[]atributos de validacao
-        [Required]public string Nome
+        [Required]
+        public string Name
         {
-            get => nome;
+            get => name;
 
-            set => Set(ref nome, value);
+            set => Set(ref name, value);
         }
-        public string Logo 
+        public string Logo
         {
             get => logo;
 
-            set => Set(ref nome, value);
+            set => Set(ref name, value);
         }
         public string Site
         {
             get => site;
 
-            set => Set(ref nome, value);
+            set => Set(ref name, value);
         }
-
-
-        
     }
 }

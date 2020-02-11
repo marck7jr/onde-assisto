@@ -11,48 +11,48 @@ namespace OndeAssisto.Web.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PlatformsController : ControllerBase
+    public class AuthorsController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public PlatformsController(ApplicationDbContext context)
+        public AuthorsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Platforms
+        // GET: api/Authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Platform>>> GetPlatforms()
+        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
         {
-            return await _context.Platforms.ToListAsync();
+            return await _context.Authors.ToListAsync();
         }
 
-        // GET: api/Platforms/5
+        // GET: api/Authors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Platform>> GetPlatform(Guid id)
+        public async Task<ActionResult<Author>> GetAuthor(Guid id)
         {
-            var platform = await _context.Platforms.FindAsync(id);
+            var author = await _context.Authors.FindAsync(id);
 
-            if (platform == null)
+            if (author == null)
             {
                 return NotFound();
             }
 
-            return platform;
+            return author;
         }
 
-        // PUT: api/Platforms/5
+        // PUT: api/Authors/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlatform(Guid id, Platform platform)
+        public async Task<IActionResult> PutAuthor(Guid id, Author author)
         {
-            if (id != platform.Guid)
+            if (id != author.Guid)
             {
                 return BadRequest();
             }
 
-            _context.Entry(platform).State = EntityState.Modified;
+            _context.Entry(author).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace OndeAssisto.Web.Api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PlatformExists(id))
+                if (!AuthorExists(id))
                 {
                     return NotFound();
                 }
@@ -73,37 +73,37 @@ namespace OndeAssisto.Web.Api.Controllers
             return NoContent();
         }
 
-        // POST: api/Platforms
+        // POST: api/Authors
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Platform>> PostPlatform(Platform platform)
+        public async Task<ActionResult<Author>> PostAuthor(Author author)
         {
-            _context.Platforms.Add(platform);
+            _context.Authors.Add(author);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPlatform", new { id = platform.Guid }, platform);
+            return CreatedAtAction("GetAuthor", new { id = author.Guid }, author);
         }
 
-        // DELETE: api/Platforms/5
+        // DELETE: api/Authors/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Platform>> DeletePlatform(Guid id)
+        public async Task<ActionResult<Author>> DeleteAuthor(Guid id)
         {
-            var platform = await _context.Platforms.FindAsync(id);
-            if (platform == null)
+            var author = await _context.Authors.FindAsync(id);
+            if (author == null)
             {
                 return NotFound();
             }
 
-            _context.Platforms.Remove(platform);
+            _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
 
-            return platform;
+            return author;
         }
 
-        private bool PlatformExists(Guid id)
+        private bool AuthorExists(Guid id)
         {
-            return _context.Platforms.Any(e => e.Guid == id);
+            return _context.Authors.Any(e => e.Guid == id);
         }
     }
 }
