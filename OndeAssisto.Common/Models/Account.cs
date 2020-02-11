@@ -22,7 +22,8 @@ namespace OndeAssisto.Common.Models
         public string Name { get => name; set => Set(ref name, value); }
         [Required, EmailAddress]
         public string Email { get => email; set => Set(ref email, value); }
-        [Required]
+        //limitando campo de texto 
+        [Required,StringLength(maximumLength:16,MinimumLength =8)]
         public string Password { get => password; set => Set(ref password, value); }
         [Required]
         public string Role { get => role; set => Set(ref role, value); }

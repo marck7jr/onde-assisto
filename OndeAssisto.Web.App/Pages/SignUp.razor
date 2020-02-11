@@ -1,5 +1,6 @@
 ﻿@page "/profile/signup"
 @layout ObservableLayout
+@inherits ObservableComponent
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navManager
 @inject IStringLocalizer<SignUp> _localizer
@@ -37,7 +38,9 @@
 </div>
 
 @code {
-    public bool IsDisable { get; set; } = false;
+    private bool isDisable = false;
+
+    public bool IsDisable { get => isDisable; set => Set(ref isDisable, value); }
     public Account Account { get; set; }
     public Notification Notification { get; set; }
 
@@ -48,6 +51,7 @@
 
     public async Task OnSubmitAsync()
     {
+        this.IsDisable = true;
         this.Account.Role = AccountRoleType.User.ToString();
         var client = _clientFactory.CreateClient("api");
         var content = new StringContent(JsonSerializer.Serialize<Account>(this.Account), Encoding.UTF8, "application/json");

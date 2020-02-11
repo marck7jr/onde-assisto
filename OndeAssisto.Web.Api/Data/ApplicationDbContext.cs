@@ -11,6 +11,8 @@ namespace OndeAssisto.Web.Api.Data
 
         }
 
+        public DbSet<Platform> Platforms { get; set; }
+        
         public DbSet<Account> Accounts { get; set; }
         public DbSet<JwtTokenRefreshData> Tokens { get; set; }
     }
