@@ -6,7 +6,6 @@ namespace OndeAssisto.Common.Models
 {
     public abstract class Entity : ObservableObject
     {
-
         private Guid guid;
         private DateTime createdAt;
         private DateTime updatedAt;

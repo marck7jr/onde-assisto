@@ -1,10 +1,15 @@
-﻿@using System.ComponentModel
+﻿@using Blazored.LocalStorage
+@using System.ComponentModel
 @using System.IO
 @using System.Net
 @using System.Net.Http
+@using System.Net.Http.Headers
 @using System.Runtime.CompilerServices
+@using System.Security.Claims
 @using System.Text
 @using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.AspNetCore.Authentication.JwtBearer
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -15,6 +20,8 @@
 @using Microsoft.JSInterop
 @using OndeAssisto.Common.Contracts.Jwt
 @using OndeAssisto.Common.Models
+@using OndeAssisto.Common.Models.Jwt
 @using OndeAssisto.Web.App
 @using OndeAssisto.Web.App.Components
+@using OndeAssisto.Web.App.Services
 @using OndeAssisto.Web.App.Shared

@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using OndeAssisto.Common.Models.Converters;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace OndeAssisto.Common.Models
 {
+    [TypeConverter(typeof(EntityConverter<Media>))]
+
     public class Media : Entity
     {
-        private string name;
-        private string email;
         private bool isOutDated = false;
         private List<Platform> platforms;
         private Account account;
         private Work work;
 
-        [Required]
-        public string Name { get => name; set => Set(ref name, value); }
-        public string Email { get => email; set => Set(ref email, value); }
+        public Media()
+        {
+            Platforms = new List<Platform>();
+            Account = new Account();
+            Work = new Work();
+        }
+
         public bool IsOutDated { get => isOutDated; set => Set(ref isOutDated, value); }
         [Required]
         public List<Platform> Platforms { get => platforms; set => Set(ref platforms, value); }

@@ -1,6 +1,6 @@
 ﻿using OndeAssisto.Common.Contracts.Jwt;
 
-namespace OndeAssisto.Web.Api.Services.Jwt
+namespace OndeAssisto.Common.Models.Jwt
 {
     public class JwtCredentialsIdentity : IJwtCredentialsIdentity
     {

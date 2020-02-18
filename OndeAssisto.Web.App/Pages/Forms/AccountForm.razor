@@ -1,11 +1,13 @@
-﻿@page "/profile/signup"
+﻿@page "/account/form"
+
 @layout ObservableLayout
 @inherits ObservableComponent
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navManager
-@inject IStringLocalizer<SignUp> _localizer
+@inject IStringLocalizer<AccountForm> _localizer
+@inject ILocalStorageService _storage
 
-<div class="page-sign-up">
+<div class="page-entity-new">
     <form method="post" @onsubmit="OnSubmitAsync">
         <img src="img/logo.png" id="logo" @onclick="GoToHome" />
         <h3>@_localizer["FormTitle"]</h3>
@@ -34,46 +36,74 @@
             <p>@_localizer["ButtonText"]</p>
         </button>
     </form>
-    <Notification @ref="Notification" />
 </div>
 
 @code {
+    private HttpClient _client;
+    private ClaimsPrincipal user { get; set; }
     private bool isDisable = false;
+    private Account account;
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     public bool IsDisable { get => isDisable; set => Set(ref isDisable, value); }
-    public Account Account { get; set; }
-    public Notification Notification { get; set; }
+    public Account Account { get => account; set => Set(ref account, value); }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Account = new Account();
+        _client = _clientFactory.CreateClient("api");
+        user = (await authenticationStateTask).User;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (await _storage.GetItemAsync<string>(nameof(JwtTokenAccessData.AccessToken)) is string token)
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        }
+
+        if (firstRender && user.Identity.IsAuthenticated)
+        {
+            var response = await _client.GetAsync($"account");
+            if (response.IsSuccessStatusCode)
+            {
+                Account = JsonSerializer.Deserialize<Account>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+        }
+    }
+
 
     public async Task OnSubmitAsync()
     {
         this.IsDisable = true;
         this.Account.Role = AccountRoleType.User.ToString();
-        var client = _clientFactory.CreateClient("api");
         var content = new StringContent(JsonSerializer.Serialize<Account>(this.Account), Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync("account", content);
+        HttpResponseMessage response;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            response = await _client.PutAsync("account", content);
+            await _storage.RemoveItemAsync(nameof(JwtTokenAccessData.AccessToken));
+        }
+        else
+        {
+            response = await _client.PostAsync("account", content);
+        }
 
         if (response.IsSuccessStatusCode)
         {
-            // TODO: Redicionar para a página do Usuário usando as credenciais da autenticação.
             _navManager.NavigateTo("/");
         }
         else
         {
             var code = (int)response.StatusCode;
-
-            Notification.Message = _localizer[code.ToString()];
-            Notification.IsActive = true;
         }
     }
 
     public void GoToHome()
     {
-        _navManager.NavigateTo("/home", true);
+        _navManager.NavigateTo("/", true);
     }
 }

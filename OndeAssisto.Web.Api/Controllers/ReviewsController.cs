@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
 using OndeAssisto.Web.Api.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace OndeAssisto.Web.Api.Controllers
@@ -20,90 +20,92 @@ namespace OndeAssisto.Web.Api.Controllers
             _context = context;
         }
 
-        // GET: api/Reviews
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Review>>> GetReviews()
+        [HttpGet, AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetReviewsAsync()
         {
-            return await _context.Reviews.ToListAsync();
+            return await _context.Reviews
+                .Include(x => x.Account)
+                .Include(x => x.Media)
+                .ToListAsync();
         }
 
-        // GET: api/Reviews/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Review>> GetReview(Guid id)
+        [HttpGet("{guid:guid}"), AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetReviewAsync([FromRoute] Guid guid)
         {
-            var review = await _context.Reviews.FindAsync(id);
-
-            if (review == null)
+            if (await _context.Reviews.FindAsync(guid) is Review review)
             {
-                return NotFound();
+                return review;
             }
 
-            return review;
+            return NotFound();
         }
 
-        // PUT: api/Reviews/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutReview(Guid id, Review review)
+        [HttpPost, Authorize]
+        public async Task<ActionResult<dynamic>> OnPostReviewAsync([FromBody] Review model)
         {
-            if (id != review.Guid)
+            if (User.Identity.IsAuthenticated)
             {
-                return BadRequest();
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            _context.Entry(review).State = EntityState.Modified;
+                if (await _context.Reviews.AnyAsync(x => x.Account.Guid == model.Account.Guid))
+                {
+                    return Conflict(ModelState);
+                }
 
-            try
-            {
+                model.Account = await _context.Accounts.FindAsync(model.Account.Guid);
+                model.CreatedAt = DateTime.UtcNow;
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Reviews.Add(model);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                return StatusCode((int)HttpStatusCode.Created, model);
             }
 
-            return NoContent();
+            return Unauthorized();
         }
 
-        // POST: api/Reviews
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<Review>> PostReview(Review review)
+        [HttpPut, Authorize]
+        public async Task<ActionResult<dynamic>> OnPutMediaAsync([FromBody] Review model)
         {
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetReview", new { id = review.Guid }, review);
-        }
-
-        // DELETE: api/Reviews/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Review>> DeleteReview(Guid id)
-        {
-            var review = await _context.Reviews.FindAsync(id);
-            if (review == null)
+            if (User.Identity.IsAuthenticated)
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Reviews.Update(model);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpDelete, Authorize]
+        public async Task<ActionResult<dynamic>> OnDeleteReviewAsync([FromBody] Review model)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (await _context.Reviews.FindAsync(model.Guid) is Review review)
+                {
+                    _context.Reviews.Remove(review);
+                    await _context.SaveChangesAsync();
+
+                    return review;
+                }
+
                 return NotFound();
             }
 
-            _context.Reviews.Remove(review);
-            await _context.SaveChangesAsync();
-
-            return review;
-        }
-
-        private bool ReviewExists(Guid id)
-        {
-            return _context.Reviews.Any(e => e.Guid == id);
+            return Unauthorized();
         }
     }
 }

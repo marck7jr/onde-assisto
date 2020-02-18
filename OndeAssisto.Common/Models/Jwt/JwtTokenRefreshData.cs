@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace OndeAssisto.Web.Api.Services.Jwt
+namespace OndeAssisto.Common.Models.Jwt
 {
     public class JwtTokenRefreshData : JwtToken, IJwtTokenRefreshData
     {

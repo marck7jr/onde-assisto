@@ -1,7 +1,7 @@
 ﻿using OndeAssisto.Common.Contracts.Jwt;
 using System;
 
-namespace OndeAssisto.Web.Api.Services.Jwt
+namespace OndeAssisto.Common.Models.Jwt
 {
     public class JwtClaimsIdentity : IJwtClaimsIdentity
     {

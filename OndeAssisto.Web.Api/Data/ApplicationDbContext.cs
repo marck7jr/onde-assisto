@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
-using OndeAssisto.Web.Api.Services.Jwt;
+using OndeAssisto.Common.Models.Jwt;
 
 namespace OndeAssisto.Web.Api.Data
 {

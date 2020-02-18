@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
 using OndeAssisto.Web.Api.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace OndeAssisto.Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class MediasController : ControllerBase
     {
@@ -20,90 +20,98 @@ namespace OndeAssisto.Web.Api.Controllers
             _context = context;
         }
 
-        // GET: api/Medias
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Media>>> GetMedias()
+        [HttpGet, AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetMediasAsync()
         {
-            return await _context.Medias.ToListAsync();
+            return await _context.Medias
+                .Include(x => x.Account)
+                .Include(x => x.Platforms)
+                .Include(x => x.Work)
+                .ToListAsync();
         }
 
-        // GET: api/Medias/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Media>> GetMedia(Guid id)
+        [HttpGet("{guid:guid}"), AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetMediaAsync([FromRoute] Guid guid)
         {
-            var media = await _context.Medias.FindAsync(id);
-
-            if (media == null)
+            if (await _context.Medias.FindAsync(guid) is Media media)
             {
-                return NotFound();
+                await _context.Entry(media).Reference(x => x.Account).LoadAsync();
+                await _context.Entry(media).Reference(x => x.Work).LoadAsync();
+                await _context.Entry(media.Work).Reference(x => x.Author).LoadAsync();
+                await _context.Entry(media).Collection(x => x.Platforms).LoadAsync();
+
+                return media;
             }
 
-            return media;
+            return NotFound();
         }
 
-        // PUT: api/Medias/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMedia(Guid id, Media media)
+        [HttpPost, Authorize]
+        public async Task<ActionResult<dynamic>> OnPostMediaAsync([FromBody] Media model)
         {
-            if (id != media.Guid)
+            if (User.Identity.IsAuthenticated)
             {
-                return BadRequest();
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            _context.Entry(media).State = EntityState.Modified;
+                if (await _context.Medias.AnyAsync(x => x.Work.Guid == model.Work.Guid))
+                {
+                    return Conflict(ModelState);
+                }
 
-            try
-            {
+                model.CreatedAt = DateTime.UtcNow;
+                model.UpdatedAt = DateTime.UtcNow;
+
+                model.Account = await _context.Accounts.FindAsync(model.Account.Guid);
+                model.Work = await _context.Works.FindAsync(model.Work.Guid);
+                model.Platforms.ForEach(async x => x = await _context.Platforms.FindAsync(x.Guid));
+                _context.Medias.Add(model);
                 await _context.SaveChangesAsync();
+
+                return StatusCode((int)HttpStatusCode.Created, model);
             }
-            catch (DbUpdateConcurrencyException)
+
+            return Unauthorized();
+        }
+
+        [HttpPut, Authorize]
+        public async Task<ActionResult<dynamic>> OnPutMediaAsync([FromBody] Media model)
+        {
+            if (User.Identity.IsAuthenticated)
             {
-                if (!MediaExists(id))
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
-                {
-                    throw;
-                }
+
+                model.UpdatedAt = DateTime.UtcNow;
+                _context.Medias.Update(model);
+
+                await _context.SaveChangesAsync();
+
+                return NoContent();
             }
 
-            return NoContent();
+            return Unauthorized();
         }
 
-        // POST: api/Medias
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<Media>> PostMedia(Media media)
+        [HttpDelete("{guid:guid}"), Authorize(Roles = "Administrator, Moderator")]
+        public async Task<ActionResult<dynamic>> OnDeleteMediaAsync([FromRoute] Guid guid)
         {
-            _context.Medias.Add(media);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetMedia", new { id = media.Guid }, media);
-        }
-
-        // DELETE: api/Medias/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Media>> DeleteMedia(Guid id)
-        {
-            var media = await _context.Medias.FindAsync(id);
-            if (media == null)
+            if (User.Identity.IsAuthenticated)
             {
-                return NotFound();
+                if (await _context.Medias.FindAsync(guid) is Media media)
+                {
+                    _context.Medias.Remove(media);
+                    await _context.SaveChangesAsync();
+
+                    return media;
+                }
             }
 
-            _context.Medias.Remove(media);
-            await _context.SaveChangesAsync();
-
-            return media;
-        }
-
-        private bool MediaExists(Guid id)
-        {
-            return _context.Medias.Any(e => e.Guid == id);
+            return Unauthorized();
         }
     }
 }

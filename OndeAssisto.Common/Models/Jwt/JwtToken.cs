@@ -2,7 +2,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace OndeAssisto.Web.Api.Services.Jwt
+namespace OndeAssisto.Common.Models.Jwt
 {
     public abstract class JwtToken : IJwtToken
     {

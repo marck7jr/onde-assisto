@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
 using OndeAssisto.Web.Api.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace OndeAssisto.Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthorsController : ControllerBase
     {
@@ -20,90 +20,88 @@ namespace OndeAssisto.Web.Api.Controllers
             _context = context;
         }
 
-        // GET: api/Authors
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAuthors()
+        [HttpGet, AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetAuthorsAsync()
         {
             return await _context.Authors.ToListAsync();
         }
 
-        // GET: api/Authors/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthor(Guid id)
+        [HttpGet("{guid:guid}"), AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetAuthorAsync([FromRoute] Guid guid)
         {
-            var author = await _context.Authors.FindAsync(id);
-
-            if (author == null)
+            if (await _context.Authors.FindAsync(guid) is Author author)
             {
-                return NotFound();
+                return author;
             }
 
-            return author;
+            return NotFound();
         }
 
-        // PUT: api/Authors/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAuthor(Guid id, Author author)
+        [HttpPost, Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<dynamic>> OnPostAuthorAsync([FromBody] Author model)
         {
-            if (id != author.Guid)
+            if (User.Identity.IsAuthenticated)
             {
-                return BadRequest();
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            _context.Entry(author).State = EntityState.Modified;
+                if (await _context.Authors.AnyAsync(a => a.Name == model.Name))
+                {
+                    return Conflict(ModelState);
+                }
 
-            try
-            {
+                model.CreatedAt = DateTime.UtcNow;
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Authors.Add(model);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AuthorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                return StatusCode((int)HttpStatusCode.Created, model);
             }
 
-            return NoContent();
+            return Unauthorized();
         }
 
-        // POST: api/Authors
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<Author>> PostAuthor(Author author)
+        [HttpPut, Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<dynamic>> OnPutAuthorAsync([FromBody] Author model)
         {
-            _context.Authors.Add(author);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAuthor", new { id = author.Guid }, author);
-        }
-
-        // DELETE: api/Authors/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Author>> DeleteAuthor(Guid id)
-        {
-            var author = await _context.Authors.FindAsync(id);
-            if (author == null)
+            if (User.Identity.IsAuthenticated)
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Authors.Update(model);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpDelete("{guid:guid}"), Authorize(Roles = "Administrator")]
+        public async Task<ActionResult<dynamic>> OnDeleteAuthorAsync([FromRoute] Guid guid)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (await _context.Authors.FindAsync(guid) is Author author)
+                {
+                    _context.Authors.Remove(author);
+                    await _context.SaveChangesAsync();
+
+                    return author;
+                }
+
                 return NotFound();
             }
 
-            _context.Authors.Remove(author);
-            await _context.SaveChangesAsync();
-
-            return author;
-        }
-
-        private bool AuthorExists(Guid id)
-        {
-            return _context.Authors.Any(e => e.Guid == id);
+            return Unauthorized();
         }
     }
 }

@@ -17,31 +17,39 @@ namespace OndeAssisto.Web.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
+            Environment = environment;
             Configuration = configuration;
         }
 
+        public IWebHostEnvironment Environment { get; private set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("OndeAssistoDatabase"))
+                if (Environment.IsDevelopment())
                 {
-                    Password = Configuration["OndeAssistoDatabase:Password"]
-                };
+                    options.UseSqlite("Data Source=OndeAssistoDatabase.db");
+                }
+                else
+                {
+                    var builder = new SqlConnectionStringBuilder(Configuration.GetConnectionString("OndeAssistoDatabase"))
+                    {
+                        Password = Configuration["OndeAssistoDatabase:Password"]
+                    };
 
-                options.UseSqlServer(builder.ConnectionString);
+                    options.UseSqlServer(builder.ConnectionString);
+                }
+
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
                 var settings = new JwtServiceSettings(Configuration);
-
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ClockSkew = TimeSpan.Zero,
@@ -77,8 +85,8 @@ namespace OndeAssisto.Web.Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

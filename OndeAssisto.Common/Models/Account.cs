@@ -1,6 +1,8 @@
 ﻿using OndeAssisto.Common.Contracts.Jwt;
+using OndeAssisto.Common.Models.Converters;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace OndeAssisto.Common.Models
@@ -12,12 +14,13 @@ namespace OndeAssisto.Common.Models
         User
     }
 
+    [TypeConverter(typeof(EntityConverter<Account>))]
     public class Account : Entity, IValidatableObject, IJwtCredentialsIdentity, IJwtClaimsIdentity
     {
         private string name;
         private string email;
         private string password;
-        private string role;
+        private string role = AccountRoleType.User.ToString();
 
         public string Name { get => name; set => Set(ref name, value); }
         [Required, EmailAddress]

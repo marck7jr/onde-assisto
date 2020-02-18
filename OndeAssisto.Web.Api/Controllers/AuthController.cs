@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Contracts.Jwt;
 using OndeAssisto.Common.Extensions;
 using OndeAssisto.Common.Models;
+using OndeAssisto.Common.Models.Jwt;
 using OndeAssisto.Web.Api.Data;
-using OndeAssisto.Web.Api.Services.Jwt;
 using System.Threading.Tasks;
 
 namespace OndeAssisto.Web.Api.Controllers

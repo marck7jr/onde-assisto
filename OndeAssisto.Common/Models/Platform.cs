@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OndeAssisto.Common.Models.Converters;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace OndeAssisto.Common.Models
 {
+    [TypeConverter(typeof(EntityConverter<Platform>))]
     public class Platform : Entity
     {
         private string name;
@@ -20,13 +23,13 @@ namespace OndeAssisto.Common.Models
         {
             get => logo;
 
-            set => Set(ref name, value);
+            set => Set(ref logo, value);
         }
         public string Site
         {
             get => site;
 
-            set => Set(ref name, value);
+            set => Set(ref site, value);
         }
     }
 }

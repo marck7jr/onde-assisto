@@ -1,0 +1,10 @@
+﻿@import "../variables.scss";
+
+.page-entity-new {
+    align-items: center;
+    background: linear-gradient(transparent, rgba($primaryColor, .4)), url("/img/preview-background.jpg");
+    background-size: cover;
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using OndeAssisto.Common.Contracts.Jwt;
 using OndeAssisto.Common.Extensions;
+using OndeAssisto.Common.Models.Jwt;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;

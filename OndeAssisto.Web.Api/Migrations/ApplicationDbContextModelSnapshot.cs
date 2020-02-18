@@ -73,6 +73,26 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.ToTable("Authors");
                 });
 
+            modelBuilder.Entity("OndeAssisto.Common.Models.Jwt.JwtTokenRefreshData", b =>
+                {
+                    b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Guid");
+
+                    b.ToTable("Tokens");
+                });
+
             modelBuilder.Entity("OndeAssisto.Common.Models.Media", b =>
                 {
                     b.Property<Guid>("Guid")
@@ -85,15 +105,8 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsOutDated")
                         .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -191,7 +204,7 @@ namespace OndeAssisto.Web.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("ReleaseYear")
+                    b.Property<DateTime>("ReleaseDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -202,26 +215,6 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.HasIndex("AuthorGuid");
 
                     b.ToTable("Works");
-                });
-
-            modelBuilder.Entity("OndeAssisto.Web.Api.Services.Jwt.JwtTokenRefreshData", b =>
-                {
-                    b.Property<Guid>("Guid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Guid");
-
-                    b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("OndeAssisto.Common.Models.Media", b =>

@@ -1,0 +1,67 @@
+﻿@page "/authors/form"
+@page "/authors/form/{guid:guid}"
+
+@layout ObservableLayout
+@inherits ObservableComponent
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager _navManager
+@inject IStringLocalizer<AuthorForm> _localizer
+@inject ILocalStorageService _storage
+
+<AuthorizeView Roles="@(AccountRoleType.Administrator.ToString())">
+    <div class="page-entity-new">
+        <EditForm Context="editContext" method="post" Model="Author" OnValidSubmit="OnValidSubmitAsync">
+            <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+            <h3>Criar autor</h3>
+            <div>
+                <label>Nome</label>
+                <input type="text" placeholder="Nome" @bind="Author.Name" />
+            </div>
+            <button class="button-primary" type="submit">
+                <p>Cadastrar</p>
+            </button>
+        </EditForm>
+    </div>
+</AuthorizeView>
+
+@code {
+    private HttpClient _client;
+
+    [Parameter]
+    public Guid Guid { get; set; }
+    public Author Author { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Author = new Author();
+        _client = _clientFactory.CreateClient("api");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (await _storage.GetItemAsync<string>(nameof(JwtTokenAccessData.AccessToken)) is string token && firstRender)
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        }
+    }
+
+    public async Task OnValidSubmitAsync()
+    {
+        var content = new StringContent(JsonSerializer.Serialize<Author>(this.Author), Encoding.UTF8, "application/json");
+        var response = await _client.PostAsync("authors", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/");
+        }
+        else
+        {
+            var code = (int)response.StatusCode;
+        }
+    }
+
+    public void GoToHome()
+    {
+        _navManager.NavigateTo("/home", true);
+    }
+}

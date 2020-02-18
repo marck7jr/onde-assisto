@@ -3,25 +3,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OndeAssisto.Web.Api.Migrations
 {
-    public partial class AddEntities : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Role",
-                table: "Accounts",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Accounts",
-                maxLength: 64,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+            migrationBuilder.CreateTable(
+                name: "Accounts",
+                columns: table => new
+                {
+                    Guid = table.Column<Guid>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(maxLength: 64, nullable: false),
+                    Role = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Accounts", x => x.Guid);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Authors",
@@ -38,6 +39,20 @@ namespace OndeAssisto.Web.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Guid = table.Column<Guid>(nullable: false),
+                    IssuedAt = table.Column<DateTime>(nullable: false),
+                    Expires = table.Column<DateTime>(nullable: false),
+                    RefreshToken = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Works",
                 columns: table => new
                 {
@@ -48,7 +63,7 @@ namespace OndeAssisto.Web.Api.Migrations
                     Description = table.Column<string>(nullable: true),
                     AuthorGuid = table.Column<Guid>(nullable: false),
                     Cover = table.Column<string>(nullable: true),
-                    ReleaseYear = table.Column<DateTime>(nullable: false)
+                    ReleaseDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -68,8 +83,6 @@ namespace OndeAssisto.Web.Api.Migrations
                     Guid = table.Column<Guid>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Email = table.Column<string>(nullable: true),
                     IsOutDated = table.Column<bool>(nullable: false),
                     AccountGuid = table.Column<Guid>(nullable: false),
                     WorkGuid = table.Column<Guid>(nullable: false)
@@ -181,28 +194,19 @@ namespace OndeAssisto.Web.Api.Migrations
                 name: "Reviews");
 
             migrationBuilder.DropTable(
+                name: "Tokens");
+
+            migrationBuilder.DropTable(
                 name: "Medias");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "Works");
 
             migrationBuilder.DropTable(
                 name: "Authors");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Role",
-                table: "Accounts",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string));
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Password",
-                table: "Accounts",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldMaxLength: 64);
         }
     }
 }

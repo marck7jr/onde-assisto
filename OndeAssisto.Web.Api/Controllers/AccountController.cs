@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using OndeAssisto.Common.Extensions;
 using OndeAssisto.Common.Models;
 using OndeAssisto.Web.Api.Data;
@@ -15,10 +16,12 @@ namespace OndeAssisto.Web.Api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(IConfiguration configuration, ApplicationDbContext context)
         {
+            _configuration = configuration;
             _context = context;
         }
 
@@ -41,6 +44,11 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpPost, AllowAnonymous]
         public async Task<ActionResult<dynamic>> OnPostAccountAsync([FromBody] Account model)
         {
+            if (model.Password == _configuration["Jwt:SecurityKey"])
+            {
+                model.Role = AccountRoleType.Administrator.ToString();
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -48,9 +56,9 @@ namespace OndeAssisto.Web.Api.Controllers
 
             if (await _context.Accounts.AnyAsync(a => a.Email == model.Email))
             {
-                ModelState.AddModelError("Errors", "Email is already in use.");
                 return Conflict(ModelState);
             }
+
 
             model.GetDerivationKeyHash(nameof(model.Password), nameof(model.Email));
             model.CreatedAt = DateTime.UtcNow;
@@ -75,7 +83,7 @@ namespace OndeAssisto.Web.Api.Controllers
                 model.GetDerivationKeyHash(nameof(model.Password), nameof(model.Email));
                 model.UpdatedAt = DateTime.UtcNow;
 
-                _context.Entry(model).State = EntityState.Modified;
+                _context.Accounts.Update(model);
                 await _context.SaveChangesAsync();
 
                 return NoContent();

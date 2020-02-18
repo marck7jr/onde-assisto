@@ -1,9 +1,12 @@
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OndeAssisto.Web.App.Services;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -43,9 +46,17 @@ namespace OndeAssisto.Web.App
                 options.DefaultRequestCulture = new RequestCulture(supportedUICultures.FirstOrDefault());
                 options.SupportedUICultures = supportedUICultures;
             });
-            services.AddRazorPages();
+            services.AddRazorPages().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
             services.AddServerSideBlazor();
             services.AddApplicationInsightsTelemetry();
+            services.AddOptions();
+            services.AddAuthenticationCore();
+            services.AddAuthorizationCore();
+            services.AddBlazoredLocalStorage();
+            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,9 +76,7 @@ namespace OndeAssisto.Web.App
             app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();

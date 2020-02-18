@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OndeAssisto.Common.Models;
 using OndeAssisto.Web.Api.Data;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace OndeAssisto.Web.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class WorksController : ControllerBase
     {
@@ -20,90 +20,91 @@ namespace OndeAssisto.Web.Api.Controllers
             _context = context;
         }
 
-        // GET: api/Works
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Work>>> GetWorks()
+        [HttpGet, AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetWorksAsync()
         {
-            return await _context.Works.ToListAsync();
+            return await _context.Works.Include(x => x.Author).ToListAsync();
         }
 
-        // GET: api/Works/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Work>> GetWork(Guid id)
+        [HttpGet("{guid:guid}"), AllowAnonymous]
+        public async Task<ActionResult<dynamic>> OnGetWorkAsync([FromRoute] Guid guid)
         {
-            var work = await _context.Works.FindAsync(id);
-
-            if (work == null)
+            if (await _context.Works.FindAsync(guid) is Work work)
             {
-                return NotFound();
+                await _context.Entry(work).Reference(x => x.Author).LoadAsync();
+
+                return work;
             }
 
-            return work;
+            return NotFound();
         }
 
-        // PUT: api/Works/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutWork(Guid id, Work work)
+        [HttpPost, Authorize]
+        public async Task<ActionResult<dynamic>> OnPostWorkAsync([FromBody] Work model)
         {
-            if (id != work.Guid)
+            if (User.Identity.IsAuthenticated)
             {
-                return BadRequest();
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            _context.Entry(work).State = EntityState.Modified;
+                if (await _context.Works.AnyAsync(x => x.Name == model.Name))
+                {
+                    return Conflict(ModelState);
+                }
 
-            try
-            {
+                model.Author = await _context.Authors.FindAsync(model.Author.Guid);
+                model.CreatedAt = DateTime.UtcNow;
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Works.Add(model);
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WorkExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+
+                return StatusCode((int)HttpStatusCode.Created, model);
             }
 
-            return NoContent();
+            return Unauthorized();
         }
 
-        // POST: api/Works
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPost]
-        public async Task<ActionResult<Work>> PostWork(Work work)
+        [HttpPut, Authorize]
+        public async Task<ActionResult<dynamic>> OnPutWorkAsync([FromBody] Work model)
         {
-            _context.Works.Add(work);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetWork", new { id = work.Guid }, work);
-        }
-
-        // DELETE: api/Works/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Work>> DeleteWork(Guid id)
-        {
-            var work = await _context.Works.FindAsync(id);
-            if (work == null)
+            if (User.Identity.IsAuthenticated)
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                model.UpdatedAt = DateTime.UtcNow;
+
+                _context.Works.Update(model);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpDelete, Authorize(Roles = "Administrator, Moderator")]
+        public async Task<ActionResult<dynamic>> OnDeletePlatformAsync([FromBody] Work model)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (await _context.Works.FindAsync(model.Guid) is Work work)
+                {
+                    _context.Works.Remove(work);
+                    await _context.SaveChangesAsync();
+
+                    return work;
+                }
+
                 return NotFound();
             }
 
-            _context.Works.Remove(work);
-            await _context.SaveChangesAsync();
-
-            return work;
-        }
-
-        private bool WorkExists(Guid id)
-        {
-            return _context.Works.Any(e => e.Guid == id);
+            return Unauthorized();
         }
     }
 }

@@ -3,6 +3,7 @@
 @inject IWebHostEnvironment _env
 @inject IStringLocalizer<MainLayout> _localizer
 @inject NavigationManager _navManager
+@inject ILocalStorageService  _storage
 
 <main>
     <header>
@@ -25,7 +26,14 @@
             }
         }
         <button class="button-flat button-icon" @onclick="ShowAuthModal">
-            <p>@_localizer["LoginButtonText"]</p>
+            <AuthorizeView>
+                <Authorized>
+                    <p>@context.User.Identity.Name</p>
+                </Authorized>
+                <NotAuthorized>
+                    <p>@_localizer["LoginButtonText"]</p>
+                </NotAuthorized>
+            </AuthorizeView>
             @IconUserSvg
         </button>
     </header>
@@ -41,7 +49,7 @@
                     @_localizer["SignIn"]
                 </p>
             </button>
-            <p>@_localizer["SignUpMessage"]<NavLink href="profile/signup">@_localizer["SignUp"]</NavLink></p>
+            <p>@_localizer["SignUpMessage"]<NavLink href="account/form">@_localizer["SignUp"]</NavLink></p>
         </form>
     </Modal>
 </main>
@@ -74,7 +82,9 @@
 
         if (response.IsSuccessStatusCode)
         {
-            // TODO: Fazer tratamento do Login com sucesso
+            var jwtToken = JsonSerializer.Deserialize<JwtTokenAccessData>(await response.Content.ReadAsStringAsync());
+            await _storage.SetItemAsync(nameof(jwtToken.AccessToken), jwtToken.AccessToken);
+            _navManager.NavigateTo("/");
         }
         else
         {
