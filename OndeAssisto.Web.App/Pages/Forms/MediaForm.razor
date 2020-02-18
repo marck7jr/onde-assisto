@@ -5,7 +5,7 @@
 @inherits ObservableComponent
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navManager
-@inject IStringLocalizer<WorkForm> _localizer
+@inject IStringLocalizer<MediaForm> _localizer
 @inject ILocalStorageService _storage
 
 <AuthorizeView Roles="@($"{AccountRoleType.Administrator}, {AccountRoleType.User}")">
@@ -14,8 +14,8 @@
             <img src="img/logo.png" id="logo" @onclick="GoToHome" />
             <h3>@_localizer["FormTitle"]</h3>
             <div>
-                <label>Obra</label>
-                <input placeholder="Obra" list="works" type="text" @bind="Media.Work.Name" />
+                <label>@_localizer["WorkLabel"]</label>
+                <input placeholder="@_localizer["WorkPlaceholder"]" list="works" type="text" @bind="Media.Work.Name" />
                 <datalist id="works">
                     @foreach (var work in _works)
                     {
@@ -24,10 +24,10 @@
                 </datalist>
             </div>
             <div>
-                <label>Platforms</label>
+                <label>@_localizer["PlatformLabel"]</label>
                 @foreach(var platform in Media.Platforms)
                 {
-                    <input placeholder="Plataforma" list="platforms" @bind="platform.Name" />
+                    <input placeholder="@_localizer["PlatformPlaceholder"]" list="platforms" @bind="platform.Name" />
                 }
                 <datalist id="platforms">
                     @foreach (var platform in _platforms)
@@ -40,7 +40,7 @@
                 </button>
             </div>
             <button class="button-primary" type="submit">
-                <p>@_localizer["SubmitButtonText"]</p>
+                <p>@_localizer["ButtonText"]</p>
             </button>
         </EditForm>
     </div>
@@ -61,7 +61,6 @@
     protected override async Task OnInitializedAsync()
     {
         Media = new Media();
-        Media.Platforms.Add(new Platform());
 
         _client = _clientFactory.CreateClient("api");
         _works = JsonSerializer.Deserialize<List<Work>>(await _client.GetStringAsync("works"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -98,10 +97,7 @@
             Media.Account.Guid = Guid.Parse(authentication.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
         Media.Work.Guid = _works.FirstOrDefault(x => x.Name == Media.Work.Name).Guid;
-        foreach(var platform in Media.Platforms)
-        {
-            platform.Guid = _platforms.FirstOrDefault(x => x.Name == platform.Name).Guid;
-        }
+        Media.Platforms.ForEach(x => x = _platforms.FirstOrDefault(y => x.Guid == y.Guid));
         var content = new StringContent(JsonSerializer.Serialize<Media>(Media), Encoding.UTF8, "application/json");
 
         HttpResponseMessage response;

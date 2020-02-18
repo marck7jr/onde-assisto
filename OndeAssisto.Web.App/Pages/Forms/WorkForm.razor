@@ -39,6 +39,16 @@
                     }
                 </datalist>
             </div>
+            <div>
+                <label>@_localizer["GenreLabel"]</label>
+                <input @bind="Work.Genre.Name" list="genres"/>
+                <datalist id="genres">
+                    @foreach (var genre in _genres)
+                    {
+                        <option value="@genre.Name"/>
+                    }
+                </datalist>
+            </div>
             <button class="button-primary" type="submit">
                 <p>@_localizer["SubmitButtonText"]</p>
             </button>
@@ -49,6 +59,7 @@
 @code {
     private HttpClient _client;
     private List<Author> _authors = new List<Author>();
+    private List<Genre> _genres = new List<Genre>();
 
     [Parameter]
     public Guid Guid { get; set; }
@@ -59,8 +70,8 @@
         Work = new Work();
 
         _client = _clientFactory.CreateClient("api");
-        var result = await _client.GetAsync("authors");
-        _authors = JsonSerializer.Deserialize<List<Author>>(await result.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        _authors = JsonSerializer.Deserialize<List<Author>>(await _client.GetStringAsync("authors"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        _genres = JsonSerializer.Deserialize<List<Genre>>(await _client.GetStringAsync("genres"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -84,6 +95,7 @@
     public async Task OnValidSubmitAsync()
     {
         Work.Author = _authors.FirstOrDefault(x => x.Name == Work.Author.Name);
+        Work.Genre = _genres.FirstOrDefault(x => x.Name == Work.Genre.Name);
         var content = new StringContent(JsonSerializer.Serialize<Work>(this.Work), Encoding.UTF8, "application/json");
 
         HttpResponseMessage response;

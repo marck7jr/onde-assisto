@@ -117,46 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="FiltersClassificationLabel" xml:space="preserve">
-    <value>Classificação</value>
+  <data name="ButtonText" xml:space="preserve">
+    <value>Cadastrar</value>
   </data>
-  <data name="FiltersClassificationPlaceholder" xml:space="preserve">
-    <value>Selecione</value>
+  <data name="FormTitle" xml:space="preserve">
+    <value>Criar gênero</value>
   </data>
-  <data name="FiltersGenreLabel" xml:space="preserve">
-    <value>Gênero</value>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Nome</value>
   </data>
-  <data name="FiltersGenrePlaceholder" xml:space="preserve">
-    <value>Selecione</value>
-  </data>
-  <data name="FiltersPlatformsLabel" xml:space="preserve">
-    <value>Plataformas</value>
-  </data>
-  <data name="FiltersPlatformsPlaceholder" xml:space="preserve">
-    <value>Todas</value>
-  </data>
-  <data name="FiltersReviewLabel" xml:space="preserve">
-    <value>Avaliação</value>
-  </data>
-  <data name="FiltersReviewPlaceholder" xml:space="preserve">
-    <value>Selecione</value>
-  </data>
-  <data name="FiltersTitle" xml:space="preserve">
-    <value>Filtros</value>
-  </data>
-  <data name="FiltersTypeLabel" xml:space="preserve">
-    <value>Tipo</value>
-  </data>
-  <data name="FiltersTypePlaceholder" xml:space="preserve">
-    <value>Selecione</value>
-  </data>
-  <data name="FiltersYearLabel" xml:space="preserve">
-    <value>Ano de Lançamento</value>
-  </data>
-  <data name="FiltersYearPlaceholder" xml:space="preserve">
-    <value>Selecione</value>
-  </data>
-  <data name="MediaViewTitle" xml:space="preserve">
-    <value>Mais buscados</value>
+  <data name="NamePlaceholder" xml:space="preserve">
+    <value>Nome</value>
   </data>
 </root>

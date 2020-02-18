@@ -12,11 +12,13 @@ namespace OndeAssisto.Common.Models
         private string description;
         private Author author;
         private string cover;
+        private Genre genre;
         private DateTime releaseDate = DateTime.Today;
 
         public Work()
         {
             Author = new Author();
+            Genre = new Genre();
         }
 
         [Required]
@@ -25,6 +27,7 @@ namespace OndeAssisto.Common.Models
         [Required]
         public Author Author { get => author; set => Set(ref author, value); }
         public string Cover { get => cover; set => Set(ref cover, value); }
+        public Genre Genre { get => genre; set => Set(ref genre, value); }
         public DateTime ReleaseDate { get => releaseDate; set => Set(ref releaseDate, value); }
     }
 }

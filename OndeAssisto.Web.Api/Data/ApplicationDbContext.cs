@@ -14,6 +14,7 @@ namespace OndeAssisto.Web.Api.Data
 
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<Genre> Genres { get; set; }
         public DbSet<Media> Medias { get; set; }
         public DbSet<Platform> Platforms { get; set; }
         public DbSet<Review> Reviews { get; set; }

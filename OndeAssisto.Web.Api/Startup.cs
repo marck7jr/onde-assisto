@@ -34,7 +34,7 @@ namespace OndeAssisto.Web.Api
             {
                 if (Environment.IsDevelopment())
                 {
-                    options.UseSqlite("Data Source=OndeAssistoDatabase.db");
+                    options.UseInMemoryDatabase("OndeAssistoDatabase");
                 }
                 else
                 {

@@ -11,36 +11,34 @@ namespace OndeAssisto.Web.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class WorksController : ControllerBase
+    public class GenresController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public WorksController(ApplicationDbContext context)
+        public GenresController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [HttpGet, AllowAnonymous]
-        public async Task<ActionResult<dynamic>> OnGetWorksAsync()
+        public async Task<ActionResult<dynamic>> OnGetGenresAsync()
         {
-            return await _context.Works.Include(x => x.Author).ToListAsync();
+            return await _context.Genres.ToListAsync();
         }
 
         [HttpGet("{guid:guid}"), AllowAnonymous]
-        public async Task<ActionResult<dynamic>> OnGetWorkAsync([FromRoute] Guid guid)
+        public async Task<ActionResult<dynamic>> OnGetGenreAsync([FromRoute] Guid guid)
         {
-            if (await _context.Works.FindAsync(guid) is Work work)
+            if (await _context.Genres.FindAsync(guid) is Genre genre)
             {
-                await _context.Entry(work).Reference(x => x.Author).LoadAsync();
-
-                return work;
+                return genre;
             }
 
             return NotFound();
         }
 
-        [HttpPost, Authorize]
-        public async Task<ActionResult<dynamic>> OnPostWorkAsync([FromBody] Work model)
+        [HttpPost, Authorize(Roles = "Administrator, Moderator")]
+        public async Task<ActionResult<dynamic>> OnPostGenreAsync([FromBody] Genre model)
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -49,17 +47,15 @@ namespace OndeAssisto.Web.Api.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (await _context.Works.AnyAsync(x => x.Name == model.Name))
+                if (await _context.Genres.AnyAsync(x => x.Name == model.Name))
                 {
                     return Conflict(ModelState);
                 }
 
-                model.Author = await _context.Authors.FindAsync(model.Author.Guid);
-                model.Genre = await _context.Genres.FindAsync(model.Genre.Guid);
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
 
-                _context.Works.Add(model);
+                _context.Genres.Add(model);
                 await _context.SaveChangesAsync();
 
                 return StatusCode((int)HttpStatusCode.Created, model);
@@ -68,8 +64,8 @@ namespace OndeAssisto.Web.Api.Controllers
             return Unauthorized();
         }
 
-        [HttpPut, Authorize]
-        public async Task<ActionResult<dynamic>> OnPutWorkAsync([FromBody] Work model)
+        [HttpPut, Authorize(Roles = "Administrator, Moderator")]
+        public async Task<ActionResult<dynamic>> OnPutGenreAsync([FromBody] Genre model)
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -80,7 +76,7 @@ namespace OndeAssisto.Web.Api.Controllers
 
                 model.UpdatedAt = DateTime.UtcNow;
 
-                _context.Works.Update(model);
+                _context.Genres.Update(model);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
@@ -90,19 +86,22 @@ namespace OndeAssisto.Web.Api.Controllers
         }
 
         [HttpDelete, Authorize(Roles = "Administrator, Moderator")]
-        public async Task<ActionResult<dynamic>> OnDeletePlatformAsync([FromBody] Work model)
+        public async Task<ActionResult<dynamic>> OnDeleteGenreAsync([FromBody] Genre model)
         {
             if (User.Identity.IsAuthenticated)
             {
-                if (await _context.Works.FindAsync(model.Guid) is Work work)
+                if (!ModelState.IsValid)
                 {
-                    _context.Works.Remove(work);
-                    await _context.SaveChangesAsync();
-
-                    return work;
+                    return BadRequest(ModelState);
                 }
 
-                return NotFound();
+                if (await _context.Genres.FindAsync(model.Guid) is Genre genre)
+                {
+                    _context.Genres.Remove(genre);
+                    await _context.SaveChangesAsync();
+
+                    return genre;
+                }
             }
 
             return Unauthorized();

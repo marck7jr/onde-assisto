@@ -1,0 +1,10 @@
+﻿<div class="media-view-item">
+    <img src="@Media.Work.Cover"/>
+    <strong>@Media.Work.Name</strong>
+    <p>@Media.Work.Genre.Name</p>
+</div>
+
+@code {
+    [Parameter]
+    public Media Media { get; set; }
+}

@@ -74,33 +74,27 @@ button:hover {
   display: flex;
   flex-flow: column;
   margin: 2em;
-  width: 20vw;
 }
-.filters-container > header {
+.filters-container header {
   border: none;
   border-radius: 0.5em 0.5em 0 0;
-  align-items: center;
   background: #f69601;
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
   padding: 1em;
-  position: relative;
 }
-.filters-container > header h3 {
+.filters-container header h3 {
   color: #FFFFFF;
   font-size: 1em;
   font-weight: bold;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
-.filters-container > header svg {
+.filters-container header svg {
   fill: rgba(0, 0, 0, 0.6);
   padding: 1em;
   position: absolute;
   right: 0;
 }
-.filters-container > form {
+.filters-container form {
   border-color: rgba(0, 0, 0, 0.2);
   border-style: solid;
   border-radius: 0 0 0.5em 0.5em;
@@ -201,6 +195,58 @@ form button[type=submit] {
 }
 .modal-container .modal-dialog #modal-close-button:hover svg {
   fill: #FFFFFF;
+}
+
+.media-view {
+  display: flex;
+  flex-flow: column;
+  margin: 2em;
+}
+.media-view label {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 1em;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  margin: 0.9em 0;
+  text-transform: uppercase;
+}
+.media-view hr {
+  border: none;
+  height: 4px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 1%, transparent);
+  margin-bottom: 1em;
+}
+.media-view .media-view-items {
+  display: flex;
+}
+
+.media-view-item {
+  border: none;
+  box-sizing: content-box;
+  border-radius: 6px;
+  box-shadow: 0 2pt 2pt rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-flow: column;
+  height: 40vh;
+  margin: 4pt;
+  position: relative;
+  width: 20vh;
+}
+.media-view-item img {
+  border-radius: 6px 6px 0 0;
+  height: 30vh;
+}
+.media-view-item strong, .media-view-item p {
+  margin: 2pt 8pt;
+}
+.media-view-item strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgba(0, 0, 0, 0.8);
+}
+.media-view-item p {
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .nav-container {

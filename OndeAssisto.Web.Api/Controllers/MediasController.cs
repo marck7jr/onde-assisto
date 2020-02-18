@@ -26,7 +26,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return await _context.Medias
                 .Include(x => x.Account)
                 .Include(x => x.Platforms)
-                .Include(x => x.Work)
+                .Include(x => x.Work).ThenInclude(x => x.Genre)
                 .ToListAsync();
         }
 

@@ -1,21 +1,21 @@
-﻿@page "/authors/form"
-@page "/authors/form/{guid:guid}"
+﻿@page "/genres/form"
+@page "/genres/form/{guid:guid}"
 
 @layout ObservableLayout
 @inherits ObservableComponent
 @inject IHttpClientFactory _clientFactory
 @inject NavigationManager _navManager
-@inject IStringLocalizer<AuthorForm> _localizer
+@inject IStringLocalizer<GenreForm> _localizer
 @inject ILocalStorageService _storage
 
 <AuthorizeView Roles="@(AccountRoleType.Administrator.ToString())">
     <div class="page-entity-new">
-        <EditForm Context="editContext" method="post" Model="Author" OnValidSubmit="OnValidSubmitAsync">
+        <EditForm Context="editContext" method="post" Model="Genre" OnValidSubmit="OnValidSubmitAsync">
             <img src="img/logo.png" id="logo" @onclick="GoToHome" />
             <h3>@_localizer["FormTitle"]</h3>
             <div>
                 <label>@_localizer["NameLabel"]</label>
-                <input type="text" placeholder="@_localizer["NamePlaceholder"]" @bind="Author.Name" />
+                <input type="text" placeholder="@_localizer["NamePlaceholder"]" @bind="Genre.Name" />
             </div>
             <button class="button-primary" type="submit">
                 <p>@_localizer["ButtonText"]</p>
@@ -29,11 +29,11 @@
 
     [Parameter]
     public Guid Guid { get; set; }
-    public Author Author { get; set; }
+    public Genre Genre { get; set; }
 
     protected override void OnInitialized()
     {
-        Author = new Author();
+        Genre = new Genre();
         _client = _clientFactory.CreateClient("api");
     }
 
@@ -46,10 +46,10 @@
 
         if (Guid != Guid.Empty && firstRender)
         {
-            var response = await _client.GetAsync($"authors/{Guid}");
+            var response = await _client.GetAsync($"genres/{Guid}");
             if (response.IsSuccessStatusCode)
             {
-                Author = JsonSerializer.Deserialize<Author>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                Genre = JsonSerializer.Deserialize<Genre>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
         }
 
@@ -57,8 +57,8 @@
 
     public async Task OnValidSubmitAsync()
     {
-        var content = new StringContent(JsonSerializer.Serialize<Author>(this.Author), Encoding.UTF8, "application/json");
-        var response = await _client.PostAsync("authors", content);
+        var content = new StringContent(JsonSerializer.Serialize<Genre>(Genre), Encoding.UTF8, "application/json");
+        var response = await _client.PostAsync("genres", content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -72,6 +72,6 @@
 
     public void GoToHome()
     {
-        _navManager.NavigateTo("/home", true);
+        _navManager.NavigateTo("/", true);
     }
 }

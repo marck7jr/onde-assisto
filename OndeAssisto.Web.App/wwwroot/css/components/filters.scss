@@ -4,18 +4,12 @@
     display: flex;
     flex-flow: column;
     margin: 2em;
-    width: 20vw;
 
-    & > header {
+    header {
         border: none;
         border-radius: .5em .5em 0 0;
-        align-items: center;
         background: $secondaryColor;
-        display: flex;
-        flex-flow: row;
-        justify-content: center;
         padding: 1em;
-        position: relative;
 
         h3 {
             color: $altColor;
@@ -33,7 +27,7 @@
         }
     }
 
-    & > form {
+    form {
         border-color: rgba($baseColor, .2);
         border-style: solid;
         border-radius: 0 0 .5em .5em;
