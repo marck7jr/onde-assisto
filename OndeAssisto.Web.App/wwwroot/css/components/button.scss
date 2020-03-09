@@ -45,7 +45,7 @@ button {
         }
 
         &:hover {
-            box-shadow: -.5em -.5em 1em rgba($altColor, 1), .5em .5em 1em rgba($baseColor, .2);
+            box-shadow: $neumorphismBoxShadow;
         }
     }
 
@@ -66,7 +66,7 @@ button {
     }
 
     &:hover {
-        box-shadow: 0 0 1em rgba($baseColor, .2);
+        box-shadow: $materialBoxShadow;
         cursor: pointer;
     }
 }

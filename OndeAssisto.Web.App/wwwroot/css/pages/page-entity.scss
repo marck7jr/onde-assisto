@@ -1,0 +1,22 @@
+﻿@import "../variables.scss";
+
+.page-entity {
+    padding: 1em;
+
+    &-view {
+        display: flex;
+        flex-flow: column;
+
+        &-items {
+            display: flex;
+            flex-flow: column;
+        }
+    }
+
+    &-template {
+        border: none;
+        border-radius: .5em;
+        max-width: 10vw;
+        padding: .5em;
+    }
+}

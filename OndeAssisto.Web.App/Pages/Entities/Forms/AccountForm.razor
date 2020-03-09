@@ -8,7 +8,7 @@
 @inject ILocalStorageService _storage
 
 <div class="page-entity-new">
-    <form method="post" @onsubmit="OnSubmitAsync">
+    <EditForm method="post" Model="Account" OnValidSubmit="OnValidSubmitAsync">
         <img src="img/logo.png" id="logo" @onclick="GoToHome" />
         <h3>@_localizer["FormTitle"]</h3>
         <div>
@@ -35,7 +35,7 @@
         <button class="button-primary" type="submit" disabled="@(!IsDisable)">
             <p>@_localizer["ButtonText"]</p>
         </button>
-    </form>
+    </EditForm>
 </div>
 
 @code {
@@ -74,7 +74,7 @@
     }
 
 
-    public async Task OnSubmitAsync()
+    public async Task OnValidSubmitAsync()
     {
         this.IsDisable = true;
         this.Account.Role = AccountRoleType.User.ToString();

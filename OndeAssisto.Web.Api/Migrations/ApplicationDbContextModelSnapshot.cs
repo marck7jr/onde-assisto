@@ -15,7 +15,7 @@ namespace OndeAssisto.Web.Api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -144,6 +144,21 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.ToTable("Medias");
                 });
 
+            modelBuilder.Entity("OndeAssisto.Common.Models.MediaPlatform", b =>
+                {
+                    b.Property<Guid>("MediaGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlatformGuid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("MediaGuid", "PlatformGuid");
+
+                    b.HasIndex("PlatformGuid");
+
+                    b.ToTable("MediaPlatforms");
+                });
+
             modelBuilder.Entity("OndeAssisto.Common.Models.Platform", b =>
                 {
                     b.Property<Guid>("Guid")
@@ -156,9 +171,6 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("MediaGuid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -170,8 +182,6 @@ namespace OndeAssisto.Web.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Guid");
-
-                    b.HasIndex("MediaGuid");
 
                     b.ToTable("Platforms");
                 });
@@ -221,7 +231,7 @@ namespace OndeAssisto.Web.Api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("GenreGuid")
+                    b.Property<Guid>("GenreGuid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
@@ -258,11 +268,19 @@ namespace OndeAssisto.Web.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("OndeAssisto.Common.Models.Platform", b =>
+            modelBuilder.Entity("OndeAssisto.Common.Models.MediaPlatform", b =>
                 {
-                    b.HasOne("OndeAssisto.Common.Models.Media", null)
+                    b.HasOne("OndeAssisto.Common.Models.Media", "Media")
                         .WithMany("Platforms")
-                        .HasForeignKey("MediaGuid");
+                        .HasForeignKey("MediaGuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OndeAssisto.Common.Models.Platform", "Platform")
+                        .WithMany("Medias")
+                        .HasForeignKey("PlatformGuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OndeAssisto.Common.Models.Review", b =>
@@ -288,7 +306,9 @@ namespace OndeAssisto.Web.Api.Migrations
 
                     b.HasOne("OndeAssisto.Common.Models.Genre", "Genre")
                         .WithMany()
-                        .HasForeignKey("GenreGuid");
+                        .HasForeignKey("GenreGuid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

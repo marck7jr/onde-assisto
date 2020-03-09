@@ -135,6 +135,9 @@
   <data name="FormTitle" xml:space="preserve">
     <value>Criar obra</value>
   </data>
+  <data name="GenreLabel" xml:space="preserve">
+    <value>Gênero</value>
+  </data>
   <data name="NameLabel" xml:space="preserve">
     <value>Nome</value>
   </data>

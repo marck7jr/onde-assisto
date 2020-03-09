@@ -23,7 +23,9 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<dynamic>> OnGetPlatformsAsync()
         {
-            return await _context.Platforms.ToListAsync();
+            return await _context.Platforms
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         [HttpGet("{guid:guid}"), AllowAnonymous]

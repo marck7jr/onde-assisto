@@ -1,0 +1,20 @@
+﻿@import "../variables.scss";
+
+.popup {
+    background: $altColor;
+    border: none;
+    border-radius: 4pt;
+    box-shadow: $materialBoxShadow;
+    display: none;
+    flex-flow: column;
+    font-size: 12px;
+    padding: 1em;
+
+    &[active] {
+        display: flex;
+    }
+
+    a {
+        margin: 2pt;
+    }
+}

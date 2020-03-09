@@ -1,0 +1,81 @@
+﻿@page "/medias/{guid:guid}"
+
+@inject IHttpClientFactory _clientFactory
+
+<div class="page-entity-details">
+    <div class="page-entity-details-hero">
+        <img src="@_media.Work.Cover" />
+        <div class="page-entity-details-hero-dialog">
+            <p>Informações atualizadas?</p>
+            <div class="page-entity-details-hero-dialog-commands">
+                <button>Sim</button>
+                <button>Não</button>
+            </div>
+        </div>
+        <a href="medias/form/@_media.Guid">Sugerir informações sobre esta obra</a>
+    </div>
+    <section>
+        <div class="page-entity-details-header">
+            <button>Voltar</button>
+            <div class="page-entity-details-header-content">
+                <p>@_media.Work.Name</p>
+                <p>@_media.Work.ReleaseDate.Year</p>
+                <p>|</p>
+                <p>@_media.Work.Author.Name</p>
+            </div>
+            <button>Favorito</button>
+        </div>
+        <div class="page-entity-details-article">
+            <h3>Sinopse</h3>
+            <div>
+                <p>
+                    @_media.Work.Description
+                </p>
+            </div>
+            <div>
+                <strong>Gênero:</strong>
+                <p>@_media.Work.Genre.Name</p>
+            </div>
+            <!--
+                <div>
+                    <strong>Classificação:</strong>
+                    <p>@_media.Work.Classification</p>
+                </div>
+            -->
+        </div>
+        <div>
+            <strong>Assista agora em:</strong>
+            <div class="page-entity-details-collection">
+                @foreach (var platform in _media.Platforms)
+                {
+                    <div class="page-entity-details-collection-item">
+                        <img src="@platform.Platform.Logo" />
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="page-entity-details-history">
+            <NavLink href="">
+                <p>
+                    Visualizar histórico de exibições
+                </p>
+                <!--Ícone-->
+            </NavLink>
+        </div>
+    </section>
+</div>
+
+@code {
+    private Media _media = new Media();
+    private HttpClient _client;
+
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = _clientFactory.CreateClient("api");
+        _media = JsonSerializer.Deserialize<Media>(await _client.GetStringAsync($"medias/{Guid}"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+}

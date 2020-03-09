@@ -1,0 +1,20 @@
+﻿@page "/authors"
+@inject IHttpClientFactory _clientFactory;
+
+<div class="page-entity">
+    <AuthorizeView>
+        <EntityView Class="page-entity-view" Endpoint="authors" TEntity="Author" Title="Autores">
+            <Template Context="entity">
+                <div class="page-entity-template">
+                    <NavLink href="@($"/authors/form/{entity.Guid}")">
+                        <p>@entity.Name</p>
+                    </NavLink>
+                </div>
+            </Template>
+        </EntityView>
+    </AuthorizeView>
+</div>
+
+@code {
+
+}

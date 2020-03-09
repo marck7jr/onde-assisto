@@ -1,0 +1,93 @@
+﻿@page "/medias/form"
+@page "/medias/form/{guid:guid}"
+
+@layout ObservableLayout
+@inject IHttpClientFactory _clientFactory
+@inject IStringLocalizer<MediaForm> _localizer
+
+<AuthorizeView>
+    <EntityForm @ref="EntityForm" Context="form" Endpoint="medias" TEntity="Media" Entity="@_media" Title="@_localizer["FormTitle"]" Guid="Guid">
+        <Template Context="entity">
+            <div>
+                <label>@_localizer["WorkLabel"]</label>
+                <input placeholder="@_localizer["WorkPlaceholder"]" list="works" type="text" value="@entity.Work.Name" @onchange="@(x => ProcessRelated(workName: x.Value as string))"/>
+                <datalist id="works">
+                    @foreach (var work in _works)
+                    {
+                        <option value="@work.Name" />
+                    }
+                </datalist>
+            </div>
+            <div>
+                <label>@_localizer["PlatformLabel"]</label>
+                @foreach(var platform in entity.Platforms)
+                {
+                    <div>
+                        <input placeholder="@_localizer["PlatformPlaceholder"]" list="platforms" value="@platform.Platform.Name" @onchange="@(x => ProcessRelated(platformIndex: entity.Platforms.IndexOf(platform), platformName: x.Value as string))" />
+                        <button type="button" class="button-secondary" @onclick="() => entity.Platforms.Remove(platform)">
+                            <p>-</p>
+                        </button>
+                    </div>
+                }
+                <datalist id="platforms">
+                    @foreach (var platform in _platforms)
+                    {
+                        <option value="@platform.Name" />
+                    }
+                </datalist>
+                <button type="button" class="button-secondary" @onclick="() => entity.Platforms.Add(new MediaPlatform { Platform = new Platform() })">
+                    <p>+</p>
+                </button>
+            </div>
+        </Template>
+    </EntityForm>
+</AuthorizeView>
+
+@code {
+    private HttpClient _client;
+    private Media _media = new Media();
+    private List<Work> _works = new List<Work>();
+    private List<Platform> _platforms = new List<Platform>();
+
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    public EntityForm<Media> EntityForm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = _clientFactory.CreateClient("api");
+        _works = JsonSerializer.Deserialize<List<Work>>(await _client.GetStringAsync("works"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        _platforms = JsonSerializer.Deserialize<List<Platform>>(await _client.GetStringAsync("platforms"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Guid != Guid.Empty)
+            {
+                _media = await EntityForm.LoadEntityAsync();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void ProcessRelated(int platformIndex = -1, string platformName = null, string workName = null)
+    {
+        if (platformIndex >= 0 && !(string.IsNullOrWhiteSpace(platformName)))
+        {
+            if (_platforms.FirstOrDefault(x => x.Name == platformName) is Platform newValue)
+            {
+                _media.Platforms[platformIndex].Platform = newValue;
+            }
+        }
+
+        if (_works.FirstOrDefault(x => x.Name == workName) is Work work)
+        {
+            _media.Work = work;
+        }
+
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,49 @@
+﻿@page "/platforms/form"
+@page "/platforms/form/{guid:guid}"
+
+@layout ObservableLayout
+@inherits ObservableComponent
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager _navManager
+@inject IStringLocalizer<PlatformForm> _localizer
+@inject ILocalStorageService _storage
+
+<AuthorizeView>
+    <EntityForm @ref="EntityForm" Endpoint="platforms" Entity="_platform" TEntity="Platform" Title="@_localizer["FormTitle"]" Guid="@Guid">
+        <Template Context="entity">
+            <div>
+                <label>@_localizer["NameLabel"]</label>
+                <InputText placeholder="@_localizer["NameLabelPlaceholder"]" @bind-Value="entity.Name" />
+            </div>
+            <div>
+                <label>@_localizer["LogoLabel"]</label>
+                <InputText placeholder="@_localizer["NameLogoPlaceholder"]" @bind-Value="entity.Logo" />
+            </div>
+            <div>
+                <label>@_localizer["SiteLabel"]</label>
+                <InputText placeholder="@_localizer["NameSitePlaceholder"]" @bind-Value="entity.Site" />
+            </div>
+        </Template>
+    </EntityForm>
+</AuthorizeView>
+
+@code {
+    private Platform _platform = new Platform();
+
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    public EntityForm<Platform> EntityForm { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Guid != Guid.Empty)
+            {
+                _platform = await EntityForm.LoadEntityAsync();
+                StateHasChanged();
+            }
+        }
+    }
+}

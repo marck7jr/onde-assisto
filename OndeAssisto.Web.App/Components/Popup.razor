@@ -1,0 +1,16 @@
+﻿<div class="popup" active="@IsActive" @onclick="ToglePopup">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    protected bool IsActive { get; set; } = false;
+
+    public void ToglePopup()
+    {
+        IsActive = !IsActive;
+        StateHasChanged();
+    }
+}

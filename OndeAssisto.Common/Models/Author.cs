@@ -12,5 +12,7 @@ namespace OndeAssisto.Common.Models
 
         [Required]
         public string Name { get => name; set => Set(ref name, value); }
+
+        public override string ToString() => Name;
     }
 }

@@ -1,0 +1,23 @@
+﻿@page  "/logout"
+@inject ILocalStorageService _storage
+@inject NavigationManager _navManager
+
+@code {
+    [CascadingParameter]
+    protected Task<AuthenticationState> Authentication { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if ((await Authentication).User.Identity.IsAuthenticated)
+        {
+            var tokenKey = nameof(JwtTokenAccessData.AccessToken);
+
+            if (await _storage.ContainKeyAsync(tokenKey))
+            {
+                await _storage.RemoveItemAsync(tokenKey);
+            }
+        }
+
+        _navManager.NavigateTo("/", true);
+    }
+}

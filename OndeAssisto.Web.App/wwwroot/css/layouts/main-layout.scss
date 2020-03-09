@@ -17,6 +17,21 @@ main {
         & > img {
             width: 10em;
         }
+
+        .user-container {
+            position: relative;
+
+            .popup {
+                bottom: -5em;
+                right: 0;
+                position: absolute;
+            }
+        }
+    }
+
+    #new-entity-button {
+        margin: 1em;
+        align-self: flex-start;
     }
 
     #auth-form {

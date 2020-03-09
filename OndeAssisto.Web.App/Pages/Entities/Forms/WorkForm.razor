@@ -1,0 +1,97 @@
+﻿@page "/works/form"
+@page "/works/form/{guid:guid}"
+
+@layout ObservableLayout
+@inherits ObservableComponent
+@inject IHttpClientFactory _clientFactory
+@inject NavigationManager _navManager
+@inject IStringLocalizer<WorkForm> _localizer
+@inject ILocalStorageService _storage
+
+<AuthorizeView>
+    <EntityForm @ref="@EntityForm" Endpoint="works" Entity="@_work" TEntity="@Work" Title="@_localizer["FormTitle"]" Guid="@Guid">
+        <Template Context="entity">
+            <div>
+                <label>@_localizer["NameLabel"]</label>
+                <input placeholder="@_localizer["NamePlaceholder"]" type="text" @bind="entity.Name" />
+            </div>
+            <div>
+                <label>@_localizer["CoverLabel"]</label>
+                <input placeholder="@_localizer["CoverPlaceholder"]" type="text" @bind="entity.Cover" />
+            </div>
+            <div>
+                <label>@_localizer["DescriptionLabel"]</label>
+                <InputTextArea placeholder="@_localizer["DescriptionPlaceholder"]" @bind-Value="entity.Description" />
+            </div>
+            <div>
+                <label>@_localizer["ReleaseDateLabel"]</label>
+                <InputDate TValue="DateTime" @bind-Value="entity.ReleaseDate" />
+            </div>
+            <div>
+                <label>@_localizer["AuthorLabel"]</label>
+                <input list="authors" value="@_work.Author.Name" @onchange="@(x => ProcessRelated(authorName: x.Value as string))" />
+                <datalist id="authors">
+                    @foreach (var author in _authors)
+                    {
+                        <option value="@author.Name" />
+                    }
+                </datalist>
+            </div>
+            <div>
+                <label>@_localizer["GenreLabel"]</label>
+                <input list="genres" value="@_work.Genre.Name" @onchange="@(x => ProcessRelated(genreName: x.Value as string))" />
+                <datalist id="genres">
+                    @foreach (var genre in _genres)
+                    {
+                        <option value="@genre.Name" />
+                    }
+                </datalist>
+            </div>
+        </Template>
+    </EntityForm>
+</AuthorizeView>
+
+@code {
+    private HttpClient _client;
+    private Work _work = new Work();
+    private List<Author> _authors = new List<Author>();
+    private List<Genre> _genres = new List<Genre>();
+
+    [Parameter]
+    public Guid Guid { get; set; }
+    public EntityForm<Work> EntityForm { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = _clientFactory.CreateClient("api");
+        _authors = JsonSerializer.Deserialize<List<Author>>(await _client.GetStringAsync("authors"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        _genres = JsonSerializer.Deserialize<List<Genre>>(await _client.GetStringAsync("genres"), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Guid != Guid.Empty)
+            {
+                _work = await EntityForm.LoadEntityAsync();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void ProcessRelated(string authorName = null, string genreName = null)
+    {
+        if (_authors.FirstOrDefault(author => author.Name == authorName) is Author author)
+        {
+            _work.Author = author;
+        }
+
+        if (_genres.FirstOrDefault(genre => genre.Name == genreName) is Genre genre)
+        {
+            _work.Genre = genre;
+        }
+
+        StateHasChanged();
+    }
+}

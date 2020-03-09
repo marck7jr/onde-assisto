@@ -27,6 +27,7 @@ namespace OndeAssisto.Common.Models
         [Required]
         public Author Author { get => author; set => Set(ref author, value); }
         public string Cover { get => cover; set => Set(ref cover, value); }
+        [Required]
         public Genre Genre { get => genre; set => Set(ref genre, value); }
         public DateTime ReleaseDate { get => releaseDate; set => Set(ref releaseDate, value); }
     }

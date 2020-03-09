@@ -23,7 +23,9 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<dynamic>> OnGetAuthorsAsync()
         {
-            return await _context.Authors.ToListAsync();
+            return await _context.Authors
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         [HttpGet("{guid:guid}"), AllowAnonymous]
@@ -37,7 +39,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return NotFound();
         }
 
-        [HttpPost, Authorize(Roles = "Administrator")]
+        [HttpPost, Authorize]
         public async Task<ActionResult<dynamic>> OnPostAuthorAsync([FromBody] Author model)
         {
             if (User.Identity.IsAuthenticated)
@@ -64,7 +66,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return Unauthorized();
         }
 
-        [HttpPut, Authorize(Roles = "Administrator")]
+        [HttpPut, Authorize]
         public async Task<ActionResult<dynamic>> OnPutAuthorAsync([FromBody] Author model)
         {
             if (User.Identity.IsAuthenticated)
@@ -85,7 +87,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return Unauthorized();
         }
 
-        [HttpDelete("{guid:guid}"), Authorize(Roles = "Administrator")]
+        [HttpDelete("{guid:guid}"), Authorize(Roles = "Administrator, Moderator")]
         public async Task<ActionResult<dynamic>> OnDeleteAuthorAsync([FromRoute] Guid guid)
         {
             if (User.Identity.IsAuthenticated)

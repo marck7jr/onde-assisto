@@ -26,6 +26,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return await _context.Reviews
                 .Include(x => x.Account)
                 .Include(x => x.Media)
+                .AsNoTracking()
                 .ToListAsync();
         }
 

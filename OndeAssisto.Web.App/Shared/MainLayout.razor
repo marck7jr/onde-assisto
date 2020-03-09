@@ -5,80 +5,115 @@
 @inject NavigationManager _navManager
 @inject ILocalStorageService  _storage
 
-<main>
-    <header>
-        <img src="img/logo.png" id="logo" @onclick="GoToHome" />
-        @{
-            if (IsProfile)
+    <main>
+        <header>
+            <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+            @if (IsManagerView || IsDashboardView)
             {
-                <Nav>
-                    <NavLink href="/works">
-                        <p>@_localizer["NavWorksLinkText"]</p>
-                    </NavLink>
-                    <NavLink href="/works">
-                        <p>@_localizer["NavContributionsLinkText"]</p>
-                    </NavLink>
-                </Nav>
+                <AuthorizeView>
+                    <Nav>
+                        @foreach(var link in _navLinks)
+                        {
+                            <NavLink Match="NavLinkMatch.All" href="@link.RelativeUri">@link.Name</NavLink>
+                        }
+                    </Nav>
+                </AuthorizeView>
             }
             else
             {
                 <Search />
             }
-        }
-        <button class="button-flat button-icon" @onclick="ShowAuthModal">
-            <AuthorizeView>
-                <Authorized>
-                    <p>@context.User.Identity.Name</p>
-                </Authorized>
-                <NotAuthorized>
-                    <p>@_localizer["LoginButtonText"]</p>
-                </NotAuthorized>
-            </AuthorizeView>
-            @IconUserSvg
-        </button>
-    </header>
-    @Body
-    <Modal @ref="AuthModal">
-        <form id="auth-form" method="post" @onsubmit="OnSubmitAsync">
-            <label>@_localizer["AuthModalLoginLabel"]</label>
-            <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
-            <label>@_localizer["AuthModalPasswordLabel"]</label>
-            <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
-            <button class="button-secondary">
-                <p>
-                    @_localizer["SignIn"]
-                </p>
+            <div class="user-container">
+                <button class="button-flat button-icon" id="user-button" @onclick="ShowActionsAsync">
+                    <AuthorizeView>
+                        <Authorized>
+                            <p>@context.User.Identity.Name</p>
+                            @IconUserSvg
+                        </Authorized>
+                        <NotAuthorized>
+                            <p>@_localizer["LoginButtonText"]</p>
+                            @IconUserSvg
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </button>
+                <AuthorizeView>
+                    <Popup @ref="DashboardPopup">
+                        <NavLink href="dashboard">Painel de Controle</NavLink>
+                        <NavLink href="logout">Sair</NavLink>
+                    </Popup>
+                </AuthorizeView>
+            </div>
+        </header>
+        @if (IsManagerView && !IsDashboardView)
+        {
+            <button class="button-primary" id="new-entity-button">
+                <a href="@($"{_navManager.ToBaseRelativePath(_navManager.Uri)}/form")">Novo Registro</a>
             </button>
-            <p>@_localizer["SignUpMessage"]<NavLink href="account/form">@_localizer["SignUp"]</NavLink></p>
-        </form>
-    </Modal>
-</main>
+        }
+        @Body
+        <Modal @ref="AuthModal">
+            <form id="auth-form" method="post" @onsubmit="OnSubmitAsync">
+                <label>@_localizer["AuthModalLoginLabel"]</label>
+                <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
+                <label>@_localizer["AuthModalPasswordLabel"]</label>
+                <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
+                <button class="button-secondary">
+                    <p>
+                        @_localizer["SignIn"]
+                    </p>
+                </button>
+                <p>@_localizer["SignUpMessage"]<NavLink href="account/form">@_localizer["SignUp"]</NavLink></p>
+            </form>
+        </Modal>
+    </main>
 
 @code {
+    private List<(string Name, string RelativeUri)> _navLinks = new List<(string Name, string RelativeUri)>
+    {
+        ("Autores", "authors"),
+        ("Gêneros", "genres"),
+        ("Obras", "works"),
+        ("Plataformas", "platforms"),
+        ("Mídias", "medias"),
+        ("Avaliações", "reviews"),
+    };
+
+    private HttpClient _client;
+
     [Parameter]
     public MarkupString IconUserSvg { get; set; }
 
     public Modal AuthModal { get; set; }
+    public Popup DashboardPopup { get; set; }
     public IJwtCredentialsIdentity Credentials { get; set; }
-    public bool IsProfile { get; set; } = false;
+    public bool IsDashboardView => _navManager.Uri.EndsWith("dashboard");
+    public bool IsManagerView => _navLinks.Any(link => _navManager.ToBaseRelativePath(_navManager.Uri).EndsWith(link.RelativeUri));
+
+    [CascadingParameter]
+    protected Task<AuthenticationState> Authentication { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (_navManager.ToBaseRelativePath(_navManager.Uri) == "profile")
-        {
-            IsProfile = true;
-        }
+        _client = _clientFactory.CreateClient("api");
 
         Credentials = new Account();
         IconUserSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-user.svg");
+
+        if (await _storage.GetItemAsync<string>(nameof(JwtTokenAccessData.AccessToken)) is string jwtToken)
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
+            var response = await _client.GetAsync("account");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                _navManager.NavigateTo("/logout");
+            }
+        }
     }
 
     public async Task OnSubmitAsync()
     {
-        var client = _clientFactory.CreateClient("api");
         var content = new StringContent(JsonSerializer.Serialize<IJwtCredentialsIdentity>(this.Credentials), Encoding.UTF8, "application/json");
-
-        var response = await client.PostAsync("auth/credentials", content);
+        var response = await _client.PostAsync("auth/credentials", content);
 
         if (response.IsSuccessStatusCode)
         {
@@ -100,9 +135,16 @@
         _navManager.NavigateTo("/home", true);
     }
 
-    public void ShowAuthModal()
+    public async Task ShowActionsAsync()
     {
-        AuthModal.CurrentState = Modal.OpenState;
+        if ((await Authentication).User.Identity.IsAuthenticated)
+        {
+            DashboardPopup.ToglePopup();
+        }
+        else
+        {
+            AuthModal.ShowModal();
+        }
     }
 
 }

@@ -23,7 +23,9 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<dynamic>> OnGetGenresAsync()
         {
-            return await _context.Genres.ToListAsync();
+            return await _context.Genres
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         [HttpGet("{guid:guid}"), AllowAnonymous]
@@ -37,7 +39,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return NotFound();
         }
 
-        [HttpPost, Authorize(Roles = "Administrator, Moderator")]
+        [HttpPost, Authorize]
         public async Task<ActionResult<dynamic>> OnPostGenreAsync([FromBody] Genre model)
         {
             if (User.Identity.IsAuthenticated)
@@ -64,7 +66,7 @@ namespace OndeAssisto.Web.Api.Controllers
             return Unauthorized();
         }
 
-        [HttpPut, Authorize(Roles = "Administrator, Moderator")]
+        [HttpPut, Authorize]
         public async Task<ActionResult<dynamic>> OnPutGenreAsync([FromBody] Genre model)
         {
             if (User.Identity.IsAuthenticated)

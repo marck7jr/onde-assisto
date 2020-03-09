@@ -1,0 +1,86 @@
+﻿@layout ObservableLayout
+
+@inject IHttpClientFactory _clientFactory
+@inject ILocalStorageService _storage
+@inject NavigationManager _navManager
+
+@typeparam TEntity
+
+<div class="page-entity-new">
+    <EditForm method="post" Model="@Entity" OnValidSubmit="OnValidSubmitAsync">
+        <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+        <h3>@Title</h3>
+        @Template(Entity)
+        <button class="button-primary" type="submit">
+            <p>Salvar</p>
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    private HttpClient _client;
+
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Endpoint { get; set; }
+    [Parameter]
+    public TEntity Entity { get; set; }
+    [Parameter]
+    public RenderFragment<TEntity> Template { get; set; }
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _client = _clientFactory.CreateClient("api");
+    }
+
+    public async Task<TEntity> LoadEntityAsync()
+    {
+        var response = await _client.GetAsync($"{Endpoint}/{Guid}");
+        if (response.IsSuccessStatusCode)
+        {
+            return JsonSerializer.Deserialize<TEntity>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+
+        return default(TEntity);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (await _storage.GetItemAsync<string>(nameof(JwtTokenAccessData.AccessToken)) is string token && firstRender)
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        }
+    }
+
+    public async Task OnValidSubmitAsync()
+    {
+        var content = new StringContent(JsonSerializer.Serialize<TEntity>(Entity), Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response;
+        if (Guid != Guid.Empty)
+        {
+            response = await _client.PutAsync(Endpoint, content);
+        }
+        else
+        {
+            response = await _client.PostAsync(Endpoint, content);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo(Endpoint);
+        }
+        else
+        {
+            var code = (int)response.StatusCode;
+        }
+    }
+
+    public void GoToHome()
+    {
+        _navManager.NavigateTo("/home");
+    }
+}

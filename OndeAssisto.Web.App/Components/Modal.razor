@@ -3,10 +3,9 @@
 
 <div class="modal-container @CurrentState">
     <div class="modal-dialog">
-        <button id="modal-close-button" class="button-flat" @onclick="Close">@IconCloseSvg</button>
+        <button id="modal-close-button" class="button-flat" @onclick="CloseModal">@IconCloseSvg</button>
         @ChildContent
     </div>
-    <Notification @ref="Notification" />
 </div>
 
 @code {
@@ -32,7 +31,12 @@
         IconCloseSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-close.svg");
     }
 
-    public void Close()
+    public void ShowModal()
+    {
+        CurrentState = OpenState;
+    }
+
+    public void CloseModal()
     {
         CurrentState = ClosedState;
     }

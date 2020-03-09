@@ -1,5 +1,6 @@
 ﻿@page "/home"
 @inject IStringLocalizer<Home> _localizer
+@inject NavigationManager _navManager
 
 <div class="page-home">
     <Filters Title="@_localizer["FiltersTitle"]">
@@ -10,9 +11,20 @@
         <ComboBox Label="@_localizer["FiltersReviewLabel"]" Placeholder="@_localizer["FiltersReviewPlaceholder"]" />
         <ComboBox Label="@_localizer["FiltersYearLabel"]" Placeholder="@_localizer["FiltersYearPlaceholder"]" />
     </Filters>
-    <MediaView Title="@_localizer["MediaViewTitle"]" />
+    <EntityView Class="page-home-content" Endpoint="medias" TEntity="Media" Title="Mais Buscados">
+        <Template Context="entity">
+            <div class="page-home-content-items-view" @onclick="() => OnClick(entity.Guid)">
+                <img src="@entity.Work.Cover" />
+                <strong>@entity.Work.Name</strong>
+                <p>@entity.Work.Genre.Name</p>
+            </div>
+        </Template>
+    </EntityView>
 </div>
 
 @code {
-
+    public void OnClick(Guid guid)
+    {
+        _navManager.NavigateTo($"medias/{guid}");
+    }
 }

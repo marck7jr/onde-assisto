@@ -1,0 +1,48 @@
+﻿@inject IHttpClientFactory _clientFactory
+@inject ILocalStorageService _storage
+
+@typeparam TEntity
+
+<div class="@Class">
+    <h1>@Title</h1>
+    <div class="@Class-items">
+        @foreach (var entity in _entities)
+        {
+            @Template(entity)
+        }
+    </div>
+</div>
+
+
+@code {
+    private HttpClient _client;
+    private List<TEntity> _entities = new List<TEntity>();
+
+    [Parameter]
+    public string Class { get; set; }
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Endpoint { get; set; }
+
+    [Parameter]
+    public RenderFragment<TEntity> Template { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _client = _clientFactory.CreateClient("api");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (await _storage.GetItemAsync<string>(nameof(JwtTokenAccessData.AccessToken)) is string token && firstRender)
+            {
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+            }
+            _entities = JsonSerializer.Deserialize<List<TEntity>>(await _client.GetStringAsync(Endpoint), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            StateHasChanged();
+        }
+    }
+}

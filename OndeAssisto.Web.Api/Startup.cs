@@ -32,7 +32,7 @@ namespace OndeAssisto.Web.Api
             services.AddControllers();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                if (Environment.IsDevelopment())
+                if (Environment.IsDevelopment() && false)
                 {
                     options.UseInMemoryDatabase("OndeAssistoDatabase");
                 }
@@ -44,8 +44,8 @@ namespace OndeAssisto.Web.Api
                     };
 
                     options.UseSqlServer(builder.ConnectionString);
+                    options.EnableSensitiveDataLogging();
                 }
-
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {

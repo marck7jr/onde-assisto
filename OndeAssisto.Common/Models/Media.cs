@@ -10,20 +10,20 @@ namespace OndeAssisto.Common.Models
     public class Media : Entity
     {
         private bool isOutDated = false;
-        private List<Platform> platforms;
+        private List<MediaPlatform> platforms;
         private Account account;
         private Work work;
 
         public Media()
         {
-            Platforms = new List<Platform>();
+            Platforms = new List<MediaPlatform>();
             Account = new Account();
             Work = new Work();
         }
 
         public bool IsOutDated { get => isOutDated; set => Set(ref isOutDated, value); }
         [Required]
-        public List<Platform> Platforms { get => platforms; set => Set(ref platforms, value); }
+        public List<MediaPlatform> Platforms { get => platforms; set => Set(ref platforms, value); }
         [Required]
         public Account Account { get => account; set => Set(ref account, value); }
         [Required]

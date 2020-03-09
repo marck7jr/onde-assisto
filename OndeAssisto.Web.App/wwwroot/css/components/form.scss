@@ -41,6 +41,19 @@ form {
         display: flex;
         flex-flow: column;
 
+        div {
+            display: flex;
+            flex-flow: row;
+            
+            input {
+                flex-grow: 1;
+            }
+
+            button {
+                margin-bottom: .5em;
+            }
+        }
+
         label {
             color: rgba($baseColor, .6);
             margin: .5em 0;

@@ -39,6 +39,36 @@ namespace OndeAssisto.Web.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Genres",
+                columns: table => new
+                {
+                    Guid = table.Column<Guid>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Genres", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Platforms",
+                columns: table => new
+                {
+                    Guid = table.Column<Guid>(nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Logo = table.Column<string>(nullable: true),
+                    Site = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Platforms", x => x.Guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tokens",
                 columns: table => new
                 {
@@ -63,6 +93,7 @@ namespace OndeAssisto.Web.Api.Migrations
                     Description = table.Column<string>(nullable: true),
                     AuthorGuid = table.Column<Guid>(nullable: false),
                     Cover = table.Column<string>(nullable: true),
+                    GenreGuid = table.Column<Guid>(nullable: false),
                     ReleaseDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -72,6 +103,12 @@ namespace OndeAssisto.Web.Api.Migrations
                         name: "FK_Works_Authors_AuthorGuid",
                         column: x => x.AuthorGuid,
                         principalTable: "Authors",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Works_Genres_GenreGuid",
+                        column: x => x.GenreGuid,
+                        principalTable: "Genres",
                         principalColumn: "Guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -105,26 +142,27 @@ namespace OndeAssisto.Web.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Platforms",
+                name: "MediaPlatforms",
                 columns: table => new
                 {
-                    Guid = table.Column<Guid>(nullable: false),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    UpdatedAt = table.Column<DateTime>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Logo = table.Column<string>(nullable: true),
-                    Site = table.Column<string>(nullable: true),
-                    MediaGuid = table.Column<Guid>(nullable: true)
+                    MediaGuid = table.Column<Guid>(nullable: false),
+                    PlatformGuid = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Platforms", x => x.Guid);
+                    table.PrimaryKey("PK_MediaPlatforms", x => new { x.MediaGuid, x.PlatformGuid });
                     table.ForeignKey(
-                        name: "FK_Platforms_Medias_MediaGuid",
+                        name: "FK_MediaPlatforms_Medias_MediaGuid",
                         column: x => x.MediaGuid,
                         principalTable: "Medias",
                         principalColumn: "Guid",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MediaPlatforms_Platforms_PlatformGuid",
+                        column: x => x.PlatformGuid,
+                        principalTable: "Platforms",
+                        principalColumn: "Guid",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -155,6 +193,11 @@ namespace OndeAssisto.Web.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_MediaPlatforms_PlatformGuid",
+                table: "MediaPlatforms",
+                column: "PlatformGuid");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Medias_AccountGuid",
                 table: "Medias",
                 column: "AccountGuid");
@@ -163,11 +206,6 @@ namespace OndeAssisto.Web.Api.Migrations
                 name: "IX_Medias_WorkGuid",
                 table: "Medias",
                 column: "WorkGuid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Platforms_MediaGuid",
-                table: "Platforms",
-                column: "MediaGuid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_AccountGuid",
@@ -183,18 +221,26 @@ namespace OndeAssisto.Web.Api.Migrations
                 name: "IX_Works_AuthorGuid",
                 table: "Works",
                 column: "AuthorGuid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Works_GenreGuid",
+                table: "Works",
+                column: "GenreGuid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Platforms");
+                name: "MediaPlatforms");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Tokens");
+
+            migrationBuilder.DropTable(
+                name: "Platforms");
 
             migrationBuilder.DropTable(
                 name: "Medias");
@@ -207,6 +253,9 @@ namespace OndeAssisto.Web.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Authors");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
         }
     }
 }

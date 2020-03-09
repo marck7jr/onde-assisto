@@ -1,0 +1,19 @@
+﻿@page "/platforms"
+
+<div class="page-entity">
+    <AuthorizeView>
+        <EntityView Endpoint="platforms" TEntity="Platform" Title="Plataformas">
+            <Template Context="entity">
+                <div class="page-entity-template">
+                    <NavLink href="@($"/platforms/form/{entity.Guid}")">
+                        <p>@entity.Name</p>
+                    </NavLink>
+                </div>
+            </Template>
+        </EntityView>
+    </AuthorizeView>
+</div>
+
+@code {
+
+}

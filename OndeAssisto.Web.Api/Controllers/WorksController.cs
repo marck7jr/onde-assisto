@@ -23,7 +23,11 @@ namespace OndeAssisto.Web.Api.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<dynamic>> OnGetWorksAsync()
         {
-            return await _context.Works.Include(x => x.Author).ToListAsync();
+            return await _context.Works
+                .Include(x => x.Author)
+                .Include(x => x.Genre)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         [HttpGet("{guid:guid}"), AllowAnonymous]
@@ -32,6 +36,7 @@ namespace OndeAssisto.Web.Api.Controllers
             if (await _context.Works.FindAsync(guid) is Work work)
             {
                 await _context.Entry(work).Reference(x => x.Author).LoadAsync();
+                await _context.Entry(work).Reference(x => x.Genre).LoadAsync();
 
                 return work;
             }
@@ -54,8 +59,24 @@ namespace OndeAssisto.Web.Api.Controllers
                     return Conflict(ModelState);
                 }
 
-                model.Author = await _context.Authors.FindAsync(model.Author.Guid);
-                model.Genre = await _context.Genres.FindAsync(model.Genre.Guid);
+                if (await _context.Authors.AnyAsync(author => author.Name == model.Author.Name))
+                {
+                    _context.Authors.Attach(model.Author);
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (await _context.Genres.AnyAsync(genre => genre.Name == model.Genre.Name))
+                {
+                    _context.Genres.Attach(model.Genre);
+                }
+                else
+                {
+                    return BadRequest(ModelState);
+                }
+
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
 
@@ -77,7 +98,7 @@ namespace OndeAssisto.Web.Api.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-
+                _context.Works.Attach(model);
                 model.UpdatedAt = DateTime.UtcNow;
 
                 _context.Works.Update(model);

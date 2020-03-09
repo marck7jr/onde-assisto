@@ -1,0 +1,38 @@
+﻿@page "/genres/form"
+@page "/genres/form/{guid:guid}"
+
+@layout ObservableLayout
+@inject IStringLocalizer<GenreForm> _localizer
+
+<AuthorizeView>
+    <EntityForm @ref="EntityForm" Endpoint="genres" Entity="@_genre" TEntity="@Genre" Title="@_localizer["FormTitle"]" Guid="Guid">
+        <Template Context="entity">
+            <div>
+                <label>@_localizer["NameLabel"]</label>
+                <input type="text" placeholder="@_localizer["NamePlaceholder"]" @bind="entity.Name" />
+            </div>
+        </Template>
+    </EntityForm>
+</AuthorizeView>
+
+@code {
+    private Genre _genre = new Genre();
+
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    [Parameter]
+    public EntityForm<Genre> EntityForm { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Guid != Guid.Empty)
+            {
+                _genre = await EntityForm.LoadEntityAsync();
+                StateHasChanged();
+            }
+        }
+    }
+}

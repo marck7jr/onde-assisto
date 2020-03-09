@@ -1,0 +1,37 @@
+﻿@page "/authors/form"
+@page "/authors/form/{guid:guid}"
+
+@layout ObservableLayout
+@inject IStringLocalizer<AuthorForm> _localizer
+
+<AuthorizeView>
+    <EntityForm @ref="EntityForm" Endpoint="authors" Entity="@_author" TEntity="@Author" Title="@_localizer["FormTitle"]" Guid="@Guid">
+        <Template Context="entity">
+            <div>
+                <label>@_localizer["NameLabel"]</label>
+                <input type="text" placeholder="@_localizer["NamePlaceholder"]" @bind="entity.Name" />
+            </div>
+        </Template>
+    </EntityForm>
+</AuthorizeView>
+
+@code  {
+    private Author _author = new Author();
+
+    [Parameter]
+    public Guid Guid { get; set; }
+
+    public EntityForm<Author> EntityForm { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool fistRender)
+    {
+        if (fistRender)
+        {
+            if (Guid != Guid.Empty)
+            {
+                _author = await EntityForm.LoadEntityAsync();
+                StateHasChanged();
+            }
+        }
+    }
+}
