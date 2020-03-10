@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OndeAssisto.Common.Contracts;
 using OndeAssisto.Web.App.Services;
+using OndeAssisto.Web.App.Services.Notification;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -57,6 +59,7 @@ namespace OndeAssisto.Web.App
             services.AddAuthorizationCore();
             services.AddBlazoredLocalStorage();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+            services.AddSingleton<INotificationService, NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

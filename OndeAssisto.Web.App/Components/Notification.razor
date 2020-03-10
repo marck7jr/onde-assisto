@@ -1,33 +1,42 @@
-﻿@inherits ObservableComponent
+﻿@inject INotificationService _notificationService
 @inject IWebHostEnvironment _env
 
-<div class="notification-container" active="@IsActive">
-    <div class="notification-body">
-        <p>@Message</p>
-        <button @onclick="OnHidden">
-            @IconCloseSvg
-        </button>
+@if (!(NotificationTriggeredEventArgs is null))
+{
+    <div class="notification-container @NotificationTriggeredEventArgs.Type">
+        <div class="notification-body">
+            <p>@NotificationTriggeredEventArgs.Message</p>
+            <button @onclick="OnDisposeAsync">
+                @iconCloseSvg
+            </button>
+        </div>
     </div>
-</div>
+}
 
 @code {
-    private string message;
-    private bool isActive;
+    private MarkupString iconCloseSvg;
 
-    [CascadingParameter]
-    public string Message { get => message; set => Set(ref message, value); }
-    [CascadingParameter]
-    public bool IsActive { get => isActive; set => Set(ref isActive, value); }
-    public MarkupString IconCloseSvg { get; set; }
+    public NotificationTriggeredEventArgs NotificationTriggeredEventArgs { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IconCloseSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-close.svg");
+        _notificationService.NotificationTriggered += async (_, e) =>
+        {
+            await InvokeAsync(() =>
+            {
+                NotificationTriggeredEventArgs = e as NotificationTriggeredEventArgs;
+                StateHasChanged();
+            });
+        };
+        iconCloseSvg = (MarkupString)await File.ReadAllTextAsync($"{_env.WebRootPath}/svg/icon-close.svg");
     }
 
-    public void OnHidden()
+    private async Task OnDisposeAsync()
     {
-        IsActive = false;
-        StateHasChanged();
+        await InvokeAsync(() =>
+        {
+            NotificationTriggeredEventArgs = null;
+            StateHasChanged();
+        });
     }
 }

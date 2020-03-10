@@ -1,17 +1,24 @@
 ﻿@import "../variables.scss";
 
 .notification-container {
-    background: rgba($alertColor, 1);
+    align-self: center;
     border: none;
     border-radius: .5em;
     bottom: 1em;
     box-shadow: 0 0 1em rgba($baseColor, .4);
-    display: none;
     flex-flow: row;
-    margin: 0 auto;
     min-width: 28vw;
     padding: .5em;
     position: absolute;
+    z-index: 99;
+
+    &.success {
+        background: rgba($successColor, 1);
+    }
+
+    &.fail {
+        background: rgba($alertColor, 1);
+    }
 
     &[active] {
         display: flex;

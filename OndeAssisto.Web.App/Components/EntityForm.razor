@@ -1,8 +1,7 @@
-﻿@layout ObservableLayout
-
-@inject IHttpClientFactory _clientFactory
+﻿@inject IHttpClientFactory _clientFactory
 @inject ILocalStorageService _storage
 @inject NavigationManager _navManager
+@inject INotificationService _notificationService
 
 @typeparam TEntity
 
@@ -69,14 +68,41 @@
             response = await _client.PostAsync(Endpoint, content);
         }
 
-        if (response.IsSuccessStatusCode)
+        var code = response.StatusCode;
+
+        switch (code)
         {
-            _navManager.NavigateTo(Endpoint);
+            case HttpStatusCode.Created:
+                {
+                    await _notificationService.OnNotificationTriggeredAsync("Cadastro realizado com sucesso", "success");
+                    await RedirectAsync();
+                    break;
+
+                }
+            case HttpStatusCode.NoContent:
+                {
+                    await _notificationService.OnNotificationTriggeredAsync("Dados atualizados com sucesso.", "success");
+                    await RedirectAsync();
+                    break;
+                }
+            case HttpStatusCode.BadRequest:
+                {
+                    await _notificationService.OnNotificationTriggeredAsync("Formulário contém dados inválidos. Tente novamente.", "fail");
+                    break;
+                }
+            case HttpStatusCode.Conflict:
+                {
+                    await _notificationService.OnNotificationTriggeredAsync("Formulário contém dados conflitantes. Tente novamente.", "fail");
+                    break;
+                }
         }
-        else
-        {
-            var code = (int)response.StatusCode;
-        }
+
+    }
+
+    private async Task RedirectAsync(int delayInMilliseconds = 1000)
+    {
+        await Task.Delay(delayInMilliseconds);
+        _navManager.NavigateTo(Endpoint);
     }
 
     public void GoToHome()

@@ -227,17 +227,22 @@ a {
 }
 
 .notification-container {
-  background: #e02828;
+  align-self: center;
   border: none;
   border-radius: 0.5em;
   bottom: 1em;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.4);
-  display: none;
   flex-flow: row;
-  margin: 0 auto;
   min-width: 28vw;
   padding: 0.5em;
   position: absolute;
+  z-index: 99;
+}
+.notification-container.success {
+  background: #0e7a0d;
+}
+.notification-container.fail {
+  background: #e02828;
 }
 .notification-container[active] {
   display: flex;
@@ -296,6 +301,7 @@ main {
   display: flex;
   flex-flow: column;
   min-height: 100vh;
+  position: relative;
 }
 main header {
   align-items: center;

@@ -36,7 +36,7 @@ namespace OndeAssisto.Web.Api.Data
                 .HasOne(x => x.Platform)
                 .WithMany(x => x.Medias)
                 .HasForeignKey(x => x.PlatformGuid);
-                
+
         }
     }
 }

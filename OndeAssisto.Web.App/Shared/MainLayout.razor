@@ -4,72 +4,74 @@
 @inject IStringLocalizer<MainLayout> _localizer
 @inject NavigationManager _navManager
 @inject ILocalStorageService  _storage
+@inject INotificationService _notificationService
 
-    <main>
-        <header>
-            <img src="img/logo.png" id="logo" @onclick="GoToHome" />
-            @if (IsManagerView || IsDashboardView)
-            {
-                <AuthorizeView>
-                    <Nav>
-                        @foreach(var link in _navLinks)
-                        {
-                            <NavLink Match="NavLinkMatch.All" href="@link.RelativeUri">@link.Name</NavLink>
-                        }
-                    </Nav>
-                </AuthorizeView>
-            }
-            else
-            {
-                <Search />
-            }
-            <div class="user-container">
-                <button class="button-flat button-icon" id="user-button" @onclick="ShowActionsAsync">
-                    <AuthorizeView>
-                        <Authorized>
-                            <p>@context.User.Identity.Name</p>
-                            @IconUserSvg
-                        </Authorized>
-                        <NotAuthorized>
-                            <p>@_localizer["LoginButtonText"]</p>
-                            @IconUserSvg
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </button>
-                <AuthorizeView>
-                    <Popup @ref="DashboardPopup">
-                        <NavLink href="dashboard">Painel de Controle</NavLink>
-                        <NavLink href="logout">Sair</NavLink>
-                    </Popup>
-                </AuthorizeView>
-            </div>
-        </header>
-        @if (IsManagerView && !IsDashboardView)
+<main>
+    <header>
+        <img src="img/logo.png" id="logo" @onclick="GoToHome" />
+        @if (IsManagerView || IsDashboardView)
         {
-            <button class="button-primary" id="new-entity-button">
-                <a href="@($"{_navManager.ToBaseRelativePath(_navManager.Uri)}/form")">Novo Registro</a>
-            </button>
+            <AuthorizeView>
+                <Nav>
+                    @foreach (var link in _navLinks)
+                    {
+                        <NavLink Match="NavLinkMatch.All" href="@link.RelativeUri">@link.Name</NavLink>
+                    }
+                </Nav>
+            </AuthorizeView>
         }
-        @Body
-        <Modal @ref="AuthModal">
-            <form id="auth-form" method="post" @onsubmit="OnSubmitAsync">
-                <label>@_localizer["AuthModalLoginLabel"]</label>
-                <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
-                <label>@_localizer["AuthModalPasswordLabel"]</label>
-                <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
-                <button class="button-secondary">
-                    <p>
-                        @_localizer["SignIn"]
-                    </p>
-                </button>
-                <p>@_localizer["SignUpMessage"]<NavLink href="account/form">@_localizer["SignUp"]</NavLink></p>
-            </form>
-        </Modal>
-    </main>
+        else
+        {
+            <Search />
+        }
+        <div class="user-container">
+            <button class="button-flat button-icon" id="user-button" @onclick="ShowActionsAsync">
+                <AuthorizeView>
+                    <Authorized>
+                        <p>@context.User.Identity.Name</p>
+                        @IconUserSvg
+                    </Authorized>
+                    <NotAuthorized>
+                        <p>@_localizer["LoginButtonText"]</p>
+                        @IconUserSvg
+                    </NotAuthorized>
+                </AuthorizeView>
+            </button>
+            <AuthorizeView>
+                <Popup @ref="DashboardPopup">
+                    <NavLink href="dashboard">Painel de Controle</NavLink>
+                    <NavLink href="logout">Sair</NavLink>
+                </Popup>
+            </AuthorizeView>
+        </div>
+    </header>
+    @if (IsManagerView && !IsDashboardView)
+    {
+        <button class="button-primary" id="new-entity-button">
+            <a href="@($"{_navManager.ToBaseRelativePath(_navManager.Uri)}/form")">Novo Registro</a>
+        </button>
+    }
+    @Body
+    <Modal @ref="AuthModal">
+        <form id="auth-form" method="post" @onsubmit="OnSubmitAsync">
+            <label>@_localizer["AuthModalLoginLabel"]</label>
+            <input @bind="Credentials.Email" placeholder="@_localizer["AuthModalLoginPlaceholder"]" type="email" />
+            <label>@_localizer["AuthModalPasswordLabel"]</label>
+            <input @bind="Credentials.Password" placeholder="@_localizer["AuthModalPasswordPlaceholder"]" type="password" />
+            <button class="button-secondary">
+                <p>
+                    @_localizer["SignIn"]
+                </p>
+            </button>
+            <p>@_localizer["SignUpMessage"]<NavLink href="account/form">@_localizer["SignUp"]</NavLink></p>
+        </form>
+    </Modal>
+    <Notification />
+</main>
 
 @code {
     private List<(string Name, string RelativeUri)> _navLinks = new List<(string Name, string RelativeUri)>
-    {
+{
         ("Autores", "authors"),
         ("Gêneros", "genres"),
         ("Obras", "works"),
@@ -119,14 +121,14 @@
         {
             var jwtToken = JsonSerializer.Deserialize<JwtTokenAccessData>(await response.Content.ReadAsStringAsync());
             await _storage.SetItemAsync(nameof(jwtToken.AccessToken), jwtToken.AccessToken);
+            await _notificationService.OnNotificationTriggeredAsync("Login realizado com sucesso", "success");
+            await Task.Delay(1000);
             _navManager.NavigateTo("/");
         }
         else
         {
             var code = (int)response.StatusCode;
-
-            AuthModal.Notification.Message = _localizer[code.ToString()];
-            AuthModal.Notification.IsActive = true;
+            await _notificationService.OnNotificationTriggeredAsync("E-email ou senha estão incorretos. Por favor, tente novamente", "fail");
         }
     }
 
