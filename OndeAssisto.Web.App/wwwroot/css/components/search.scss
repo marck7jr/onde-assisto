@@ -1,6 +1,9 @@
 ﻿@import "../variables.scss";
 
 .search-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
     position: relative;
 
     & > input {

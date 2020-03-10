@@ -47,8 +47,8 @@
     </header>
     @if (IsManagerView && !IsDashboardView)
     {
-        <button class="button-primary" id="new-entity-button">
-            <a href="@($"{_navManager.ToBaseRelativePath(_navManager.Uri)}/form")">Novo Registro</a>
+        <button class="button-primary" id="new-entity-button" @onclick="OnNewEntityButtonClick">
+            <p>Novo Registro</p>
         </button>
     }
     @Body
@@ -90,6 +90,7 @@
     public IJwtCredentialsIdentity Credentials { get; set; }
     public bool IsDashboardView => _navManager.Uri.EndsWith("dashboard");
     public bool IsManagerView => _navLinks.Any(link => _navManager.ToBaseRelativePath(_navManager.Uri).EndsWith(link.RelativeUri));
+    public string SearchTerms { get; set; }
 
     [CascadingParameter]
     protected Task<AuthenticationState> Authentication { get; set; }
@@ -147,6 +148,11 @@
         {
             AuthModal.ShowModal();
         }
+    }
+
+    public void OnNewEntityButtonClick()
+    {
+        _navManager.NavigateTo(_navManager.ToBaseRelativePath($"{_navManager.Uri}/form"));
     }
 
 }

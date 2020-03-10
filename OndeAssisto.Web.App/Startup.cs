@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using OndeAssisto.Common.Contracts;
 using OndeAssisto.Web.App.Services;
 using OndeAssisto.Web.App.Services.Notification;
+using OndeAssisto.Web.App.Services.Search;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -60,6 +61,7 @@ namespace OndeAssisto.Web.App
             services.AddBlazoredLocalStorage();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddSingleton<INotificationService, NotificationService>();
+            services.AddSingleton<ISearchService, SearchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

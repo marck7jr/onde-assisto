@@ -1,5 +1,6 @@
 ﻿@inject IHttpClientFactory _clientFactory
 @inject ILocalStorageService _storage
+@inject ISearchService _searchService
 
 @typeparam TEntity
 
@@ -17,6 +18,7 @@
 @code {
     private HttpClient _client;
     private List<TEntity> _entities = new List<TEntity>();
+    private string queryParams;
 
     [Parameter]
     public string Class { get; set; }
@@ -31,6 +33,11 @@
     protected override void OnInitialized()
     {
         _client = _clientFactory.CreateClient("api");
+        _searchService.QuerySubmitted += async (_, e) =>
+        {
+            queryParams = e.QueryParams;
+            await GetEntitiesAsync();
+        };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -41,8 +48,31 @@
             {
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
             }
-            _entities = JsonSerializer.Deserialize<List<TEntity>>(await _client.GetStringAsync(Endpoint), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            await GetEntitiesAsync();
             StateHasChanged();
         }
+    }
+
+    private async Task GetEntitiesAsync()
+    {
+        await InvokeAsync(async () =>
+        {
+            if (Endpoint is "medias" && !string.IsNullOrEmpty(queryParams))
+            {
+                _entities = JsonSerializer
+                    .Deserialize<List<TEntity>>(await _client.GetStringAsync(Endpoint), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    .Where(x => (x as Media).Work.Description.Contains(queryParams) || (x as Media).Work.Name.Contains(queryParams))
+                    .ToList();
+            }
+            else
+            {
+                _entities = JsonSerializer
+                    .Deserialize<List<TEntity>>(await _client.GetStringAsync(Endpoint), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    .OrderByDescending(x => (x as Entity).CreatedAt)
+                    .ToList();
+            }
+            StateHasChanged();
+        });
     }
 }
