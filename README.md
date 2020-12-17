@@ -1,5 +1,4 @@
 # Projeto: [OndeAssisto](https://onde-assisto.azurewebsites.net)
-[![Build Status](https://dev.azure.com/aps-2/OndeAssisto/_apis/build/status/OndeAssisto?branchName=master)](https://dev.azure.com/aps-2/OndeAssisto/_build/latest?definitionId=5&branchName=master)
 ###### Visão do Projeto
 ###### Versão do Documento 1.0
 
